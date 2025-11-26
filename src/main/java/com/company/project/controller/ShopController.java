@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiParam;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.company.project.common.utils.DataResult;
 
@@ -65,7 +66,13 @@ public class ShopController {
         shop.setCreateTime(new Date());
         shop.setUpdateBy(user.getUsername());
         shop.setUpdateTime(new Date());
-        shopService.save(shop);
+
+        ShopEntity ist = shopService.getById(shop.getShopId());
+        if(Objects.nonNull(ist)){
+            shopService.updateById(shop);
+        }else {
+            shopService.save(shop);
+        }
         return DataResult.success();
     }
 

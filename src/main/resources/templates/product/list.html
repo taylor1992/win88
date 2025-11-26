@@ -14,43 +14,24 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">店铺ID</label>
                 <div class="layui-input-block">
-                    <input type="name" name="shopId" placeholder="请输入店铺ID" autocomplete="off"
-                           class="layui-input disabled">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">店铺名</label>
-                <div class="layui-input-block">
-                    <input type="name" name="name" placeholder="请输入店铺名" autocomplete="off"
-                           class="layui-input disabled">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">店铺类型</label>
-                <div class="layui-input-inline">
-                    <select name="type" lay-filter="aihao">
-                        <option value=""></option>
-
-                        <option value="1">Tiktok</option>
-                        <option value="2">Shopee</option>
-                        <option value="3">Lazada</option>
-                        <option value="4">Facebook</option>
-                        <option value="5">Other</option>
+                    <select name="shopId" class="layui-select">
+                        <th:block th:each="c : ${shop}">
+                            <option th:value="${c.shopId}" th:text="${c.name}"></option>
+                        </th:block>
                     </select>
                 </div>
             </div>
-
             <div class="layui-form-item">
-                <label class="layui-form-label">注册时间</label>
+                <label class="layui-form-label">产品ID</label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="laydate" name="registerDate"
-                           placeholder="请输入注册时间">
+                    <input type="id" name="id" placeholder="请输入产品ID" autocomplete="off"
+                           class="layui-input disabled">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">所属区域</label>
+                <label class="layui-form-label">产品名称</label>
                 <div class="layui-input-block">
-                    <input type="area" name="area" placeholder="请输入所属区域" autocomplete="off"
+                    <input type="name" name="name" placeholder="请输入产品名称" autocomplete="off"
                            class="layui-input disabled">
                 </div>
             </div>
@@ -65,7 +46,7 @@
 </div>
 
 <div class="table_div">
-    <div id="searchParam" sa:hasPermission="shop:list">
+    <div id="searchParam" sa:hasPermission="product:list">
         <form class="layui-form ">
             <div class="layui-form-item">
                 <div class="layui-input-inline">
@@ -83,34 +64,29 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container oper">
-        <button class="layui-btn layui-btn-sm" lay-event="add" sa:hasPermission="shop:add">添加</button>
-        <button class="layui-btn layui-btn-sm" lay-event="batchDeleted" sa:hasPermission="shop:delete">删除</button>
+        <button class="layui-btn layui-btn-sm" lay-event="add" sa:hasPermission="product:add">添加</button>
+        <button class="layui-btn layui-btn-sm" lay-event="batchDeleted" sa:hasPermission="product:delete">删除</button>
     </div>
 </script>
 <script type="text/html" id="tool">
     <a class="layui-btn layui-btn-xs" lay-event="look">查看</a>
-    <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="shop:update">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="shop:delete">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="product:update">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="product:delete">删除</a>
 </script>
 
 </body>
+</html>
 <script>
     layui.use(function () {
       var table = layui.table;
       var form = layui.form;
       var layer = layui.layer;
-        var laydate = layui.laydate;
-
-        //初始化laydate实例
-        laydate.render({
-            elem: '#laydate'
-        });
       //加载table
       var tableIns1 = table.render({
         elem: '#showTable'
         , contentType: 'application/json'
         , page: true //开启分页
-        , url: ctx + 'shop/listByPage' //数据接口
+        , url: ctx + 'product/listByPage' //数据接口
         , method: 'POST'
         , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
           return {
@@ -123,13 +99,11 @@
         , cols: [
           [
             {type: 'checkbox', fixed: 'left'},
+            {field: 'id', title: '产品ID', sort: true},
+            {field: 'name', title: '产品名称', sort: true},
             {field: 'shopId', title: '店铺ID', sort: true},
-            {field: 'type', title: '店铺类型', sort: true, templet: function (item) {return getShopTypeName(item.type);}},
-            {field: 'name', title: '店铺名', sort: true},
-            {field: 'registerDate', title: '注册时间', sort: true},
-            {field: 'area', title: '所属区域', sort: true},
-            {field: 'updateTime', title: '更新时间', sort: true},
-            {field: 'updateBy', title: '更新人', sort: true},
+            {field: 'shopName', title: '店铺名称', sort: true},
+            {field: 'shopType', title: '店铺类型', sort: true, templet: function (item) {return getShopTypeName(item.shopType);}},
             {width: 180, toolbar: "#tool", title: '操作'}
           ]
         ]
@@ -161,11 +135,11 @@
             setTimeout(function () {
               form.val('info', {
                 "test": "test"
-                , "shopId": ""
-                , "type": ""
+                , "id": ""
                 , "name": ""
-                , "registerDate": ""
-                , "area": ""
+                , "shopId": ""
+                , "shopName": ""
+                , "shopType": ""
               });
             }, 200);
             break;
@@ -188,7 +162,6 @@
             backshow(data);
             $(".title").html("编辑");
             toUnDisabled();
-            $('input[name="shopId"]').prop('disabled', true);
             break;
         }
       });
@@ -199,7 +172,7 @@
           content: "确定要删除么?",
           yes: function(index, layero){
             layer.close(index); //如果设定了yes回调，需进行手工关闭
-            CoreUtil.sendDelete(ctx + "shop/delete",ids,function (res) {
+            CoreUtil.sendDelete(ctx + "product/delete",ids,function (res) {
               layer.msg(res.msg, {time:1000},function () {
                 tableIns1.reload();
               });
@@ -218,7 +191,7 @@
 
       //监听保存
       form.on('submit(submit)', function(data){
-        CoreUtil.sendPost(ctx + "shop/add",data.field,function (res) {
+        CoreUtil.sendPost(ctx + "product/add",data.field,function (res) {
             $(".table_div").show();
             $(".operation").hide();
             tableIns1.reload();
@@ -247,11 +220,11 @@
         setTimeout(function () {
           form.val('info', {
             "test": "test"
-                        , "shopId": data.shopId
-                        , "type": data.type
+                        , "id": data.id
                         , "name": data.name
-                        , "registerDate": data.registerDate
-                        , "area": data.area
+                        , "shopId": data.shopId
+                        , "shopName": data.shopName
+                        , "shopType": data.shopType
                     });
         }, 200);
       }
@@ -273,4 +246,3 @@
       }
     });
 </script>
-</html>
