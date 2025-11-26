@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--公共模块-->
+    <div th:replace="~{layout}"></div>
+<body>
+<div class="panel panel-default operation" hidden>
+    <div class="panel-heading title"></div>
+    <div class="layui-card-body">
+        <form class="layui-form " action="" lay-filter="info">
+            <input name="id" hidden/>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">目标币种</label>
+                <div class="layui-input-inline">
+                    <select name="toCurrency" lay-filter="aihao">
+                        <option value=""></option>
+                        <option value="CNY">CNY</option>
+                        <option value="PHP">PHP</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">汇率币种</label>
+                <div class="layui-input-inline">
+                    <select name="fromCurrency" lay-filter="aihao">
+                        <option value=""></option>
+                        <option value="CNY">CNY</option>
+                        <option value="PHP">PHP</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">汇率开始日期</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="startDate" name="startDate">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">汇率结束日期</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="endDate" name="endDate">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="submit">开始同步</button>
+                    <button class="layui-btn layui-btn-primary" id="btn_cancel">返回</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table_div">
+    <form class="layui-form" lay-filter="searchForm">
+
+        <div class="layui-form-item">
+
+            <!-- 目标币种 -->
+            <div class="layui-inline">
+                <label class="layui-form-label">目标币种</label>
+                <div class="layui-input-inline">
+                    <select name="toCurrency">
+                        <option value=""></option>
+                        <option value="CNY">CNY</option>
+                        <option value="PHP">PHP</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 汇率币种 -->
+            <div class="layui-inline">
+                <label class="layui-form-label">汇率币种</label>
+                <div class="layui-input-inline">
+                    <select name="fromCurrency">
+                        <option value=""></option>
+                        <option value="CNY">CNY</option>
+                        <option value="PHP">PHP</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-inline">
+                <label class="layui-form-label">开始日期</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="startDate1" name="startDate">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">结束日期</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" id="endDate1" name="endDate">
+                </div>
+            </div>
+
+            <!-- 搜索按钮 -->
+            <div class="layui-inline">
+                <button class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn">
+                    <i class="layui-icon layui-icon-search"></i> 搜索
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+
+    <table class="layui-table" id="showTable" lay-filter="showTable"></table>
+</div>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container oper">
+        <button class="layui-btn layui-btn-sm" lay-event="add" sa:hasPermission="currencyRate:update">汇率同步</button>
+        <button class="layui-btn layui-btn-sm" lay-event="batchDeleted" sa:hasPermission="currencyRate:delete">删除
+        </button>
+    </div>
+</script>
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-xs" lay-event="look">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="currencyRate:update">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="currencyRate:delete">删除</a>
+</script>
+
+<script>
+    layui.use(function () {
+      var table = layui.table;
+      var form = layui.form;
+      var layer = layui.layer;
+      var formSelects = layui.formSelects;
+      var laydate = layui.laydate;
+
+        //初始化laydate实例
+        laydate.render({
+            elem: '#startDate'
+        });
+        laydate.render({
+            elem: '#endDate'
+        });
+        laydate.render({
+            elem: '#startDate1'
+        });
+        laydate.render({
+            elem: '#endDate1'
+        });
+      //加载table
+      var tableIns1 = table.render({
+        elem: '#showTable'
+        , contentType: 'application/json'
+        , page: true //开启分页
+        , url: ctx + 'currencyRate/listByPage' //数据接口
+        , method: 'POST'
+        , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+          return {
+            "code": res.code, //解析接口状态
+            "msg": res.msg, //解析提示文本
+            "count": CoreUtil.isEmpty(res.data) ? 0 : res.data.total, //解析数据长度
+            "data": CoreUtil.isEmpty(res.data) ? null : res.data.records //解析数据列表
+          }
+        }
+        , cols: [
+          [
+            {field: 'toCurrency', title: '目标币种', sort: true},
+            {field: 'fromCurrency', title: '汇率币种', sort: true},
+            {field: 'rate', title: '汇率', sort: true},
+            {field: 'rateDate', title: '汇率日期', sort: true},
+            {field: 'createdAt', title: '创建时间', sort: true},
+          ]
+        ]
+        , toolbar: '#toolbar'
+      });
+
+
+      //表头工具
+      table.on('toolbar(showTable)', function(obj){
+        switch(obj.event){
+          case 'batchDeleted':
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data;
+            if(data.length==0){
+              layer.msg("请选择要批量删除的列");
+            }else {
+              var ids = [];
+              $(data).each(function (index,item) {
+                ids.push(item.id);
+              });
+              tipDialog(ids);
+            }
+            break;
+          case 'add':
+            toUnDisabled();
+            $(".table_div").hide();
+            $(".operation").show();
+            $(".title").html("新增");
+            setTimeout(function () {
+              form.val('info', {
+                "test": "test"
+                , "id": ""
+                , "fromCurrency": ""
+                , "toCurrency": ""
+                , "rate": ""
+                , "rateDate": ""
+                , "remark": ""
+                , "createdAt": ""
+              });
+            }, 200);
+            break;
+        };
+      });
+      //列操作
+      table.on('tool(showTable)',function (obj) {
+        var data = obj.data;
+        switch (obj.event) {
+          case 'del':
+            var ids=[];
+            ids.push(data.id);
+            tipDialog(ids);
+            break;
+          case 'look':
+            backshow(data);
+            toDisabled();
+            break;
+          case 'edit':
+            backshow(data);
+            $(".title").html("编辑");
+            toUnDisabled();
+            break;
+        }
+      });
+
+      //删除
+      var tipDialog=function (ids) {
+        layer.open({
+          content: "确定要删除么?",
+          yes: function(index, layero){
+            layer.close(index); //如果设定了yes回调，需进行手工关闭
+            CoreUtil.sendDelete(ctx + "currencyRate/delete",ids,function (res) {
+              layer.msg(res.msg, {time:1000},function () {
+                tableIns1.reload();
+              });
+            });
+          }
+        });
+      };
+
+      //返回
+      $("#btn_cancel").click(function() {
+        $(".table_div").show();
+        $(".operation").hide();
+        tableIns1.reload();
+        return false;
+      });
+
+      //监听保存
+      form.on('submit(submit)', function(data){
+        console.log(data.field);
+        CoreUtil.sendPut(ctx + "currencyRate/update",data.field,function (res) {
+            $(".table_div").show();
+            $(".operation").hide();
+            tableIns1.reload();
+          });
+
+        return false;
+      });
+
+      // 监听搜索操作
+      form.on('submit(data-search-btn)', function (data) {
+        //执行搜索重载
+        tableIns1.reload({
+          page: {
+            curr: 1
+          }
+          , where: data.field
+        });
+        return false;
+      });
+
+      //回显
+      var backshow = function (data) {
+        $(".table_div").hide();
+        $(".operation").show();
+        $(".title").html("查看");
+        setTimeout(function () {
+          form.val('info', {
+            "test": "test"
+                        , "id": data.id
+                        , "fromCurrency": data.fromCurrency
+                        , "toCurrency": data.toCurrency
+                        , "rate": data.rate
+                        , "rateDate": data.rateDate
+                        , "remark": data.remark
+                        , "createdAt": data.createdAt
+                    });
+        }, 200);
+      }
+
+      //禁用输入
+      var toDisabled = function () {
+        $(".oper").hide();
+        $(".disabled").each(function (index, elem) {
+          $(elem).attr("disabled", "")
+        })
+      }
+
+      //放开输入
+      var toUnDisabled = function () {
+        $(".oper").show();
+        $(".disabled").each(function (index, elem) {
+          $(elem).removeAttr("disabled", "")
+        })
+      }
+    });
+</script>
+</body>
+</html>

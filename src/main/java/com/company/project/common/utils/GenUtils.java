@@ -88,7 +88,8 @@ public class GenUtils {
             }
 
             columsList.add(columnEntity);
-            if (!Arrays.asList("deleted", "create_id", "create_by", "update_id", "update_by", "create_time", "create_date", "update_time", "update_date").contains(column.get("columnName"))) {
+            if (!Arrays.asList("deleted", "create_id", "create_by", "update_id", "update_by", "create_time", "create_date", "update_time",
+                    "update_date","created_at","updated_at","created_by","updated_at").contains(column.get("columnName"))) {
                 htmlColumsList.add(columnEntity);
             }
         }
