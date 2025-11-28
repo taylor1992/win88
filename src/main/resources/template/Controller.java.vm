@@ -13,7 +13,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.List;
 import com.company.project.common.utils.DataResult;
-
+import com.company.project.common.utils.Win88Util;
+import com.company.project.entity.SysUser;
 import ${package}.entity.${className}Entity;
 import ${package}.service.${className}Service;
 
@@ -47,8 +48,6 @@ public class ${className}Controller {
     @ResponseBody
     public DataResult findListByPage(@RequestBody ${className}Entity ${classname}){
         LambdaQueryWrapper<${className}Entity> queryWrapper = Wrappers.lambdaQuery();
-        //查询条件示例
-        queryWrapper.eq(tbGoods.getId() != null, ${className}Entity::getId, ${classname}.getId());
         queryWrapper.orderByDesc(${className}Entity::getId);
         IPage<${className}Entity> iPage = ${classname}Service.page(${classname}.getQueryPage(), queryWrapper);
         return DataResult.success(iPage);
@@ -60,6 +59,8 @@ public class ${className}Controller {
     @SaCheckPermission("${classname}:add")
     @ResponseBody
     public DataResult add(@RequestBody ${className}Entity ${classname}){
+        String username = Win88Util.getUser().getUsername();
+        ${classname}.setCreatedBy(username);
             ${classname}Service.save(${classname});
         return DataResult.success();
     }
@@ -78,6 +79,8 @@ public class ${className}Controller {
     @SaCheckPermission("${classname}:update")
     @ResponseBody
     public DataResult update(@RequestBody ${className}Entity ${classname}){
+        SysUser user = Win88Util.getUser();
+        ${classname}.setUpdatedBy(user.getUsername());
             ${classname}Service.updateById(${classname});
         return DataResult.success();
     }

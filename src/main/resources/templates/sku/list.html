@@ -20,10 +20,14 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">关联商品</label>
+                <label class="layui-form-label">关联产品</label>
                 <div class="layui-input-block">
-                    <input type="productId" name="productId" placeholder="请输入关联 SPU 商品表 ID" autocomplete="off"
-                           class="layui-input disabled">
+                    <select name="productId" lay-search lay-filter="productId">
+                        <option value=""></option>
+                        <th:block th:each="c : ${product}">
+                            <option th:value="${c.id}" th:text="${c.productName}"></option>
+                        </th:block>
+                    </select>
                 </div>
             </div>
 
@@ -41,8 +45,14 @@
     <div id="searchParam" sa:hasPermission="sku:list">
         <form class="layui-form ">
             <div class="layui-form-item">
+                <label class="layui-form-label">关联产品</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="key" class="layui-input" autocomplete="off" placeholder="请输入">
+                    <select name="productId" lay-search lay-filter="productId">
+                        <option value=""></option>
+                        <th:block th:each="c : ${product}">
+                            <option th:value="${c.id}" th:text="${c.productName}"></option>
+                        </th:block>
+                    </select>
                 </div>
                 <div class="layui-input-inline ">
                     <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i
@@ -91,7 +101,6 @@
             {type: 'checkbox', fixed: 'left'},
             {field: 'productName', title: '产品名', sort: true},
             {field: 'skuCode', title: 'SKU', sort: true},
-            {field: 'isActive', title: '启用', sort: true,template:function(item){return getEnable(item.isActive);}},
             {field: 'updatedBy', title: '更新人', sort: true},
             {field: 'updatedTime', title: '更新时间', sort: true},
             {width: 180, toolbar: "#tool", title: '操作'}

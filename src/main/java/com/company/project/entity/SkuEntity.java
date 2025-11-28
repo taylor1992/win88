@@ -42,6 +42,10 @@ public class SkuEntity extends BaseEntity implements Serializable {
 		@TableField("product_id")
 		private Long productId;
 
+        @TableField(exist = false)
+        private String productName;
+
+
 	/**
 	 * 第一层规格名
 	 */
