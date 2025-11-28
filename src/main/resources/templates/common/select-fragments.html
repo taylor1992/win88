@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Fragments</title>
+</head>
+<body>
+
+<!-- 通用 option 模板：传入一个列表 + 占位文本 -->
+<th:block th:fragment="selectOptions(optionList, placeholder)">
+    <!-- 占位（可选） -->
+    <option th:if="${placeholder != null}"
+            value=""
+            th:text="${placeholder}">
+    </option>
+
+    <!-- 实际选项 -->
+    <option th:each="opt : ${optionList}"
+            th:value="${opt.value}"
+            th:text="${opt.label}">
+    </option>
+</th:block>
+
+</body>
+</html>

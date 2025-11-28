@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--公共模块-->
+    <div th:replace="~{layout}"></div>
+<body>
+<div class="panel panel-default operation" hidden>
+    <div class="panel-heading title"></div>
+    <div class="layui-card-body">
+        <form class="layui-form " action="" lay-filter="info">
+            <input name="id" hidden/>
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺ID</label>
+                <div class="layui-input-block">
+                    <select name="shopId" lay-search lay-filter="shopId">
+                        <th:block th:each="c : ${shop}">
+                            <option th:value="${c.shopId}" th:text="${c.name}"></option>
+                        </th:block>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内部SKU</label>
+                <div class="layui-input-block">
+                    <select name="skuId" lay-search lay-filter="skuId">
+                        <th:block th:each="c : ${sku}">
+                            <option th:value="${c.id}" th:text="${c.skuCode}"></option>
+                        </th:block>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">平台SKU</label>
+                <div class="layui-input-block">
+                    <input type="platformSkuId" name="platformSkuId"
+                           placeholder="请输入平台 SKU ID（如 TikTok 返回的 sku_id）" autocomplete="off"
+                           class="layui-input disabled">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">销售币种</label>
+                <div class="layui-input-block">
+                    <select name="currencyCode">
+                        <option value=""></option>
+                        <option value="CNY">CNY</option>
+                        <option value="PHP">PHP</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">当前售价</label>
+                <div class="layui-input-block">
+                    <input type="salePrice" name="salePrice" placeholder="请输入当前售价" autocomplete="off"
+                           class="layui-input disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">原价</label>
+                <div class="layui-input-block">
+                    <input type="originalPrice" name="originalPrice" placeholder="请输入原价" autocomplete="off"
+                           class="layui-input disabled">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">上架</label>
+                <div class="layui-input-block">
+                    <select name="isActive">
+                        <option value=""></option>
+                        <option value="0">否</option>
+                        <option value="1">是</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="submit">保存</button>
+                    <button class="layui-btn layui-btn-primary" id="btn_cancel">返回</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table_div">
+    <div id="searchParam" sa:hasPermission="shopSku:list">
+        <form class="layui-form ">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">店铺ID</label>
+                    <div class="layui-input-inline">
+                        <select name="shopId" lay-search lay-filter="shopId">
+                            <option value=""></option>
+                            <th:block th:each="c : ${shop}">
+                                <option th:value="${c.shopId}" th:text="${c.name}"></option>
+                            </th:block>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="layui-inline ">
+                    <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i
+                            class="layui-icon"></i> 搜 索
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table class="layui-table" id="showTable" lay-filter="showTable"></table>
+</div>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container oper">
+        <button class="layui-btn layui-btn-sm" lay-event="add" sa:hasPermission="shopSku:add">添加</button>
+        <button class="layui-btn layui-btn-sm" lay-event="batchDeleted" sa:hasPermission="shopSku:delete">删除</button>
+    </div>
+</script>
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-xs" lay-event="look">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="shopSku:update">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="shopSku:delete">删除</a>
+</script>
+
+</body>
+</html>
+<script>
+    layui.use(function () {
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        //加载table
+        var tableIns1 = table.render({
+            elem: '#showTable'
+            , contentType: 'application/json'
+            , page: true //开启分页
+            , url: ctx + 'shopSku/listByPage' //数据接口
+            , method: 'POST'
+            , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": CoreUtil.isEmpty(res.data) ? 0 : res.data.total, //解析数据长度
+                    "data": CoreUtil.isEmpty(res.data) ? null : res.data.records //解析数据列表
+                }
+            }
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    {field: 'platformCode', title: '平台', sort: true},
+                    {field: 'shopId', title: '店铺名称', sort: true},
+                    {field: 'skuId',width:180, title: '内部SKU', sort: true},
+                    {field: 'platformSkuId',width:180, title: '平台SKU', sort: true},
+                    {field: 'originalPrice', title: '原价', sort: true},
+                    {field: 'salePrice', title: '售价', sort: true},
+                    {field: 'currencyCode', title: '销售币种', sort: true},
+                    {field: 'isActive', title: '是否上架', sort: true,templet:function (itme) {
+                            return getActive(itme.isActive);
+                        }},
+                    {field: 'updatedTime',width: 180, title: '更新时间', sort: true},
+                    {width: 180, toolbar: "#tool", title: '操作'}
+                ]
+            ]
+            , toolbar: '#toolbar'
+        });
+
+
+        //表头工具
+        table.on('toolbar(showTable)', function (obj) {
+            switch (obj.event) {
+                case 'batchDeleted':
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg("请选择要批量删除的列");
+                    } else {
+                        var ids = [];
+                        $(data).each(function (index, item) {
+                            ids.push(item.id);
+                        });
+                        tipDialog(ids);
+                    }
+                    break;
+                case 'add':
+                    toUnDisabled();
+                    $(".table_div").hide();
+                    $(".operation").show();
+                    $(".title").html("新增");
+                    setTimeout(function () {
+                        form.val('info', {
+                            "test": "test"
+                            , "id": ""
+                            , "shopId": ""
+                            , "platformCode": ""
+                            , "platformSkuId": ""
+                            , "sellerSkuCode": ""
+                            , "skuId": ""
+                            , "currencyCode": ""
+                            , "salePrice": ""
+                            , "originalPrice": ""
+                            , "isActive": ""
+                            , "isDeleted": ""
+                            , "createdTime": ""
+                            , "updatedTime": ""
+                        });
+                    }, 200);
+                    break;
+            }
+            ;
+        });
+        //列操作
+        table.on('tool(showTable)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                case 'del':
+                    var ids = [];
+                    ids.push(data.id);
+                    tipDialog(ids);
+                    break;
+                case 'look':
+                    backshow(data);
+                    toDisabled();
+                    break;
+                case 'edit':
+                    backshow(data);
+                    $(".title").html("编辑");
+                    toUnDisabled();
+                    break;
+            }
+        });
+
+        //删除
+        var tipDialog = function (ids) {
+            layer.open({
+                content: "确定要删除么?",
+                yes: function (index, layero) {
+                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                    CoreUtil.sendDelete(ctx + "shopSku/delete", ids, function (res) {
+                        layer.msg(res.msg, {time: 1000}, function () {
+                            tableIns1.reload();
+                        });
+                    });
+                }
+            });
+        };
+
+        //返回
+        $("#btn_cancel").click(function () {
+            $(".table_div").show();
+            $(".operation").hide();
+            tableIns1.reload();
+            return false;
+        });
+
+        //监听保存
+        form.on('submit(submit)', function (data) {
+            if (data.field.id === undefined || data.field.id === null || data.field.id === "") {
+                CoreUtil.sendPost(ctx + "shopSku/add", data.field, function (res) {
+                    $(".table_div").show();
+                    $(".operation").hide();
+                    tableIns1.reload();
+                });
+            } else {
+                CoreUtil.sendPut(ctx + "shopSku/update", data.field, function (res) {
+                    $(".table_div").show();
+                    $(".operation").hide();
+                    tableIns1.reload();
+                });
+            }
+
+            return false;
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            tableIns1.reload({
+                page: {
+                    curr: 1
+                }
+                , where: data.field
+            });
+            return false;
+        });
+
+        //回显
+        var backshow = function (data) {
+            $(".table_div").hide();
+            $(".operation").show();
+            $(".title").html("查看");
+            setTimeout(function () {
+                form.val('info', {
+                    "test": "test"
+                    , "id": data.id
+                    , "shopId": data.shopId
+                    , "platformCode": data.platformCode
+                    , "platformSkuId": data.platformSkuId
+                    , "sellerSkuCode": data.sellerSkuCode
+                    , "skuId": data.skuId
+                    , "currencyCode": data.currencyCode
+                    , "salePrice": data.salePrice
+                    , "originalPrice": data.originalPrice
+                    , "isActive": data.isActive
+                    , "isDeleted": data.isDeleted
+                    , "createdTime": data.createdTime
+                    , "updatedTime": data.updatedTime
+                });
+            }, 200);
+        }
+
+        //禁用输入
+        var toDisabled = function () {
+            $(".oper").hide();
+            $(".disabled").each(function (index, elem) {
+                $(elem).attr("disabled", "")
+            })
+        }
+
+        //放开输入
+        var toUnDisabled = function () {
+            $(".oper").show();
+            $(".disabled").each(function (index, elem) {
+                $(elem).removeAttr("disabled", "")
+            })
+        }
+    });
+</script>

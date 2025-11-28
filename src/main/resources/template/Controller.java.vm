@@ -49,8 +49,8 @@ public class ${className}Controller {
     public DataResult findListByPage(@RequestBody ${className}Entity ${classname}){
         LambdaQueryWrapper<${className}Entity> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.orderByDesc(${className}Entity::getId);
-        IPage<${className}Entity> iPage = ${classname}Service.page(${classname}.getQueryPage(), queryWrapper);
-        return DataResult.success(iPage);
+        IPage<${className}Entity> data = ${classname}Service.page(${classname}.getQueryPage(), queryWrapper);
+        return DataResult.success(data);
     }
 
 

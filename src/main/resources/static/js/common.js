@@ -26,3 +26,11 @@ function getProductStatus(type) {
         default: return '-';
     }
 }
+
+function getActive(type){
+    switch (type){
+        case 0: return "否";
+        case 1: return "是";
+        default: return "-";
+    }
+}
