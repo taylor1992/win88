@@ -75,5 +75,13 @@ public class CurrencyRateController {
         return DataResult.success();
     }
 
+    @ApiOperation(value = "同步周末汇率")
+    @PutMapping("currencyRate/updateWeekend")
+    @SaCheckPermission("currencyRate:updateWeekend")
+    @ResponseBody
+    public DataResult updateWeekend(@RequestBody CurrencyRateEntity rate) {
+        currencyRateService.updateWeekend(rate.getStartDate());
+        return DataResult.success();
+    }
 
 }

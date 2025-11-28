@@ -13,45 +13,16 @@
         <form class="layui-form " action="" lay-filter="info">
             <input name="id" hidden/>
             <div class="layui-form-item">
-                <label class="layui-form-label">产品编码</label>
+                <label class="layui-form-label">SKU</label>
                 <div class="layui-input-block">
-                    <input type="productCode" name="productCode" placeholder="请输入内部产品编码（如 WK-LAP-17-N5095）"
+                    <input type="skuCode" name="skuCode" placeholder="请输入内部自定义 SKU 编码（如 WK-N95-12+512-BLACK）"
                            autocomplete="off" class="layui-input disabled">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">产品名称</label>
+                <label class="layui-form-label">关联商品</label>
                 <div class="layui-input-block">
-                    <input type="productName" name="productName"
-                           placeholder="请输入产品名称（内部用，比如：17.3寸N5095办公本）" autocomplete="off"
-                           class="layui-input disabled">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">详细描述</label>
-                <div class="layui-input-block">
-                    <input type="detailDescription" name="detailDescription"
-                           placeholder="请输入详细描述（规格、卖点等，可选）" autocomplete="off"
-                           class="layui-input disabled">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">状态</label>
-                <div class="layui-input-block">
-                    <div class="layui-input-inline">
-                        <select name="status">
-                            <option value=""></option>
-                            <option value="0">Offline</option>
-                            <option value="1">Online</option>
-                            <option value="2">Draft</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">备注</label>
-                <div class="layui-input-block">
-                    <input type="remark" name="remark" placeholder="请输入备注" autocomplete="off"
+                    <input type="productId" name="productId" placeholder="请输入关联 SPU 商品表 ID" autocomplete="off"
                            class="layui-input disabled">
                 </div>
             </div>
@@ -67,7 +38,7 @@
 </div>
 
 <div class="table_div">
-    <div id="searchParam" sa:hasPermission="product:list">
+    <div id="searchParam" sa:hasPermission="sku:list">
         <form class="layui-form ">
             <div class="layui-form-item">
                 <div class="layui-input-inline">
@@ -85,18 +56,16 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container oper">
-        <button class="layui-btn layui-btn-sm" lay-event="add" sa:hasPermission="product:add">添加</button>
-        <button class="layui-btn layui-btn-sm" lay-event="batchDeleted" sa:hasPermission="product:delete">删除</button>
+        <button class="layui-btn layui-btn-sm" lay-event="add" sa:hasPermission="sku:add">添加</button>
+        <button class="layui-btn layui-btn-sm" lay-event="batchDeleted" sa:hasPermission="sku:delete">删除</button>
     </div>
 </script>
 <script type="text/html" id="tool">
     <a class="layui-btn layui-btn-xs" lay-event="look">查看</a>
-    <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="product:update">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="product:delete">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="sku:update">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="sku:delete">删除</a>
 </script>
 
-</body>
-</html>
 <script>
     layui.use(function () {
       var table = layui.table;
@@ -107,7 +76,7 @@
         elem: '#showTable'
         , contentType: 'application/json'
         , page: true //开启分页
-        , url: ctx + 'product/listByPage' //数据接口
+        , url: ctx + 'sku/listByPage' //数据接口
         , method: 'POST'
         , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
           return {
@@ -120,11 +89,9 @@
         , cols: [
           [
             {type: 'checkbox', fixed: 'left'},
-            {field: 'productName', width:250, title: '产品名称', sort: true},
-            {field: 'productCode',width:250, title: '内部产品编码', sort: true},
-            {field: 'detailDescription', title: '详细描述', sort: true},
-            {field: 'status', width:100, title: '状态', sort: true,templet:function(item){return getProductStatus(item.status);}},
-            {field: 'remark', title: '备注', sort: true},
+            {field: 'productName', title: '产品名', sort: true},
+            {field: 'skuCode', title: 'SKU', sort: true},
+            {field: 'isActive', title: '启用', sort: true,template:function(item){return getEnable(item.isActive);}},
             {field: 'updatedBy', title: '更新人', sort: true},
             {field: 'updatedTime', title: '更新时间', sort: true},
             {width: 180, toolbar: "#tool", title: '操作'}
@@ -159,17 +126,26 @@
               form.val('info', {
                 "test": "test"
                 , "id": ""
-                , "productCode": ""
-                , "productName": ""
-                , "productNameEn": ""
-                , "brandName": ""
-                , "categoryId": ""
-                , "mainImageUrl": ""
-                , "thumbnailImageUrl": ""
-                , "shortDescription": ""
-                , "detailDescription": ""
-                , "status": ""
-                , "remark": ""
+                , "skuCode": ""
+                , "productId": ""
+                , "option1Name": ""
+                , "option1Value": ""
+                , "option2Name": ""
+                , "option2Value": ""
+                , "option3Name": ""
+                , "option3Value": ""
+                , "option4Name": ""
+                , "option4Value": ""
+                , "option5Name": ""
+                , "option5Value": ""
+                , "imageUrl": ""
+                , "weightKg": ""
+                , "lengthCm": ""
+                , "widthCm": ""
+                , "heightCm": ""
+                , "barcode": ""
+                , "isActive": ""
+                , "isDeleted": ""
                 , "updatedBy": ""
                 , "createdTime": ""
                 , "updatedTime": ""
@@ -205,7 +181,7 @@
           content: "确定要删除么?",
           yes: function(index, layero){
             layer.close(index); //如果设定了yes回调，需进行手工关闭
-            CoreUtil.sendDelete(ctx + "product/delete",ids,function (res) {
+            CoreUtil.sendDelete(ctx + "sku/delete",ids,function (res) {
               layer.msg(res.msg, {time:1000},function () {
                 tableIns1.reload();
               });
@@ -225,13 +201,13 @@
       //监听保存
       form.on('submit(submit)', function(data){
         if(data.field.id===undefined || data.field.id===null || data.field.id===""){
-          CoreUtil.sendPost(ctx + "product/add",data.field,function (res) {
+          CoreUtil.sendPost(ctx + "sku/add",data.field,function (res) {
             $(".table_div").show();
             $(".operation").hide();
             tableIns1.reload();
           });
         }else {
-          CoreUtil.sendPut(ctx + "product/update",data.field,function (res) {
+          CoreUtil.sendPut(ctx + "sku/update",data.field,function (res) {
             $(".table_div").show();
             $(".operation").hide();
             tableIns1.reload();
@@ -262,17 +238,26 @@
           form.val('info', {
             "test": "test"
                         , "id": data.id
-                        , "productCode": data.productCode
-                        , "productName": data.productName
-                        , "productNameEn": data.productNameEn
-                        , "brandName": data.brandName
-                        , "categoryId": data.categoryId
-                        , "mainImageUrl": data.mainImageUrl
-                        , "thumbnailImageUrl": data.thumbnailImageUrl
-                        , "shortDescription": data.shortDescription
-                        , "detailDescription": data.detailDescription
-                        , "status": data.status
-                        , "remark": data.remark
+                        , "skuCode": data.skuCode
+                        , "productId": data.productId
+                        , "option1Name": data.option1Name
+                        , "option1Value": data.option1Value
+                        , "option2Name": data.option2Name
+                        , "option2Value": data.option2Value
+                        , "option3Name": data.option3Name
+                        , "option3Value": data.option3Value
+                        , "option4Name": data.option4Name
+                        , "option4Value": data.option4Value
+                        , "option5Name": data.option5Name
+                        , "option5Value": data.option5Value
+                        , "imageUrl": data.imageUrl
+                        , "weightKg": data.weightKg
+                        , "lengthCm": data.lengthCm
+                        , "widthCm": data.widthCm
+                        , "heightCm": data.heightCm
+                        , "barcode": data.barcode
+                        , "isActive": data.isActive
+                        , "isDeleted": data.isDeleted
                         , "updatedBy": data.updatedBy
                         , "createdTime": data.createdTime
                         , "updatedTime": data.updatedTime
@@ -297,3 +282,5 @@
       }
     });
 </script>
+</body>
+</html>

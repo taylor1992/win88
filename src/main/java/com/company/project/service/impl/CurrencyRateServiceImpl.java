@@ -1,29 +1,23 @@
 package com.company.project.service.impl;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.company.project.common.utils.DateUtils;
-import com.company.project.entity.SysDictDetailEntity;
+import com.company.project.entity.CurrencyRateEntity;
+import com.company.project.mapper.CurrencyRateMapper;
+import com.company.project.service.CurrencyRateService;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import com.company.project.mapper.CurrencyRateMapper;
-import com.company.project.entity.CurrencyRateEntity;
-import com.company.project.service.CurrencyRateService;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service("currencyRateService")
@@ -39,7 +33,7 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
         Date date = new Date();
         String end = DateUtil.format(date,"yyyy-MM-dd");
         String start = DateUtil.format(DateUtil.offsetMonth(date,2),"yyyy-MM-dd");
-        updateByDate(start,end,"CNY","PHP,USD");
+        updateByDate(start,end,"CNY","PHP");
         log.info("汇率同步结束");
     }
 
@@ -112,5 +106,48 @@ public class CurrencyRateServiceImpl extends ServiceImpl<CurrencyRateMapper, Cur
                 updateRate("CNY", toCurrency, rate, dateStr);
             }
         }
+
+        String dateFormat = "yyyy-MM-dd";
+        List<String> dateList = DateUtils.getWeekendsBetween(DateUtil.parse(start,dateFormat), DateUtil.parse(end,dateFormat));
+        for (String d : dateList) {
+            DateTime dateTime = DateUtil.offsetDay(DateUtil.parse(d, "yyyy-MM-dd"), -2);
+            String api = "https://api.frankfurter.dev/v1/"+DateUtil.format(dateTime,dateFormat)+"?base="+base+"&symbols="+symbols;
+            ResponseEntity<Map> entity = restTemplate.getForEntity(api, Map.class);
+            Map<String,Object> m = entity.getBody();
+            String toCurrency = m.get("base").toString();
+            Map<String,Object> rate = (Map<String, Object>) m.get("rates");
+            String fromCurrency = "";
+            BigDecimal rateValue = BigDecimal.ZERO;
+            for (Map.Entry<String, Object> em : rate.entrySet()) {
+                fromCurrency = em.getKey();
+                rateValue = new BigDecimal(em.getValue().toString());
+            }
+            updateRate(toCurrency,fromCurrency,rateValue,d);
+            log.info("获取{}的汇率 {} to {} ,rate is {}",d,toCurrency,fromCurrency,rateValue);
+        }
     }
+
+    @Override
+    public void updateWeekend(String date) {
+        String dateFormat = "yyyy-MM-dd";
+        List<String> dateList = DateUtils.getWeekendsByMonthWithNow(DateUtil.parse(date, dateFormat));
+        for (String d : dateList) {
+            log.info("获取{}的汇率",d);
+            DateTime dateTime = DateUtil.offsetDay(DateUtil.parse(d, "yyyy-MM-dd"), -2);
+            String api = "https://api.frankfurter.dev/v1/"+DateUtil.format(dateTime,dateFormat)+"?base=CNY&symbols=PHP";
+            ResponseEntity<Map> entity = restTemplate.getForEntity(api, Map.class);
+            Map<String,Object> m = entity.getBody();
+            String toCurrency = m.get("base").toString();
+            Map<String,Object> rate = (Map<String, Object>) m.get("rates");
+            String fromCurrency = "";
+            BigDecimal rateValue = BigDecimal.ZERO;
+            for (Map.Entry<String, Object> em : rate.entrySet()) {
+                fromCurrency = em.getKey();
+                rateValue = new BigDecimal(em.getValue().toString());
+            }
+            updateRate(toCurrency,fromCurrency,rateValue,d);
+        }
+    }
+
+
 }

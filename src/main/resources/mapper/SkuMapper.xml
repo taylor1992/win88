@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.project.mapper.SkuMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.company.project.entity.SkuEntity" id="skuMap">
+        <result property="id" column="id"/>
+        <result property="skuCode" column="sku_code"/>
+        <result property="productId" column="product_id"/>
+        <result property="option1Name" column="option_1_name"/>
+        <result property="option1Value" column="option_1_value"/>
+        <result property="option2Name" column="option_2_name"/>
+        <result property="option2Value" column="option_2_value"/>
+        <result property="option3Name" column="option_3_name"/>
+        <result property="option3Value" column="option_3_value"/>
+        <result property="option4Name" column="option_4_name"/>
+        <result property="option4Value" column="option_4_value"/>
+        <result property="option5Name" column="option_5_name"/>
+        <result property="option5Value" column="option_5_value"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="weightKg" column="weight_kg"/>
+        <result property="lengthCm" column="length_cm"/>
+        <result property="widthCm" column="width_cm"/>
+        <result property="heightCm" column="height_cm"/>
+        <result property="barcode" column="barcode"/>
+        <result property="isActive" column="is_active"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+    </resultMap>
+
+
+</mapper>

@@ -1,16 +1,16 @@
 package com.company.project.mapper;
 
-import com.company.project.entity.ProductEntity;
+import com.company.project.entity.SkuEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 内部产品表（SPU，所有店铺共用）
+ * SKU 表：支持多平台、多店铺、变体规格
  * 
  * @author taylor
  * @email taylor@gmail.com
- * @date 2025-11-28 09:56:45
+ * @date 2025-11-27 23:37:53
  */
-public interface ProductMapper extends BaseMapper<ProductEntity> {
+public interface SkuMapper extends BaseMapper<SkuEntity> {
 	
 }

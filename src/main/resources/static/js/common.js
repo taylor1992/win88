@@ -9,3 +9,20 @@ function getShopTypeName(type) {
         default: return '-';
     }
 }
+
+function getEnable(type) {
+    switch (type) {
+        case 0: return 'Disable';
+        case 1: return 'Enable';
+        default: return '-';
+    }
+}
+
+function getProductStatus(type) {
+    switch (type) {
+        case 0: return 'Offline';
+        case 1: return 'Online';
+        case 2: return 'Draft';
+        default: return '-';
+    }
+}

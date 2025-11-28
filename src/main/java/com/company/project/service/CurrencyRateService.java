@@ -14,5 +14,7 @@ public interface CurrencyRateService extends IService<CurrencyRateEntity> {
     void updateRates();
 
     void updateByDate(String start,String end,String toCurrency,String fromCurrency);
+
+    void updateWeekend(String date);
 }
 

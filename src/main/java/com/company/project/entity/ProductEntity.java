@@ -12,11 +12,11 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 产品
+ * 内部产品表（SPU，所有店铺共用）
  *
  * @author taylor
  * @email taylor@gmail.com
- * @date 2025-11-26 17:27:36
+ * @date 2025-11-28 09:56:45
  */
 @Data
 @TableName("product")
@@ -24,58 +24,100 @@ public class ProductEntity extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 产品ID
+	 * 内部产品主键 ID
 	 */
 	@TableId("id")
-	private String id;
+	private Long id;
 
 	/**
-	 * 产品名称
+	 * 内部产品编码（如 WK-LAP-17-N5095）
 	 */
-		@TableField("name")
-		private String name;
+		@TableField("product_code")
+		private String productCode;
 
 	/**
-	 * 店铺ID
+	 * 产品名称（内部用，比如：17.3寸N5095办公本）
 	 */
-		@TableField("shop_id")
-		private String shopId;
+		@TableField("product_name")
+		private String productName;
 
 	/**
-	 * 店铺名称
+	 * 产品英文名称（可选）
 	 */
-		@TableField("shop_name")
-		private String shopName;
+		@TableField("product_name_en")
+		private String productNameEn;
 
 	/**
-	 * 店铺类型
+	 * 品牌名称（如 WK / X ByteBox）
 	 */
-		@TableField("shop_type")
-		private Integer shopType;
+		@TableField("brand_name")
+		private String brandName;
+
+	/**
+	 * 内部类目 ID（你自己的类目）
+	 */
+		@TableField("category_id")
+		private Long categoryId;
+
+	/**
+	 * 主图（内部展示/仓库识别）
+	 */
+		@TableField("main_image_url")
+		private String mainImageUrl;
+
+	/**
+	 * 缩略图（可选）
+	 */
+		@TableField("thumbnail_image_url")
+		private String thumbnailImageUrl;
+
+	/**
+	 * 简介（内部描述）
+	 */
+		@TableField("short_description")
+		private String shortDescription;
+
+	/**
+	 * 详细描述（规格、卖点等，可选）
+	 */
+		@TableField("detail_description")
+		private String detailDescription;
+
+	/**
+	 * 状态：1生效 0下线 2草稿 等（枚举 INT）
+	 */
+		@TableField("status")
+		private Integer status;
+
+	/**
+	 * 备注
+	 */
+		@TableField("remark")
+		private String remark;
+
+	/**
+	 * 创建人
+	 */
+		@TableField("created_by")
+		private String createdBy;
+
+	/**
+	 * 更新人
+	 */
+		@TableField("updated_by")
+		private String updatedBy;
 
 	/**
 	 * 创建时间
 	 */
-		@TableField("create_time")
-		private Date createTime;
+		@TableField("created_time")
+		private Date createdTime;
 
 	/**
-	 * 
+	 * 更新时间
 	 */
-		@TableField("create_by")
-		private String createBy;
-
-	/**
-	 * 
-	 */
-		@TableField("update_time")
-		private Date updateTime;
-
-	/**
-	 * 
-	 */
-		@TableField("update_by")
-		private String updateBy;
+		@TableField("updated_time")
+		private Date updatedTime;
 
 
 }

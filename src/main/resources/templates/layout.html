@@ -15,7 +15,7 @@
 <script th:src="@{/static/layui/formSelects-v4.min.js}"></script>
 <!-- 引入公共的 JavaScript 文件 -->
 <script th:src="@{/static/js/core.util.js}"></script>
-<script th:src="@{/static/js/common.js}"></script>
+<script th:src="@{/static/js/common.js(v=${T(System).currentTimeMillis()})}"></script>
 <!--回显列表中的checkbox-->
 <script type="text/html" id="checkbox_status">
     <input type="checkbox" name="status" value="{{= d.status }}" title="开启|关闭" lay-skin="switch" disabled {{d.status==1?"checked" : "" }}>
