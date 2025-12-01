@@ -10,7 +10,7 @@
 <div class="panel panel-default operation" hidden>
     <div class="panel-heading title"></div>
     <div class="layui-card-body">
-        <form class="layui-form " action="" lay-filter="info">
+        <form class="layui-form " id="af1" action="" lay-filter="af1">
             <input name="id" hidden/>
             <div class="layui-form-item">
                 <label class="layui-form-label">店铺ID</label>
@@ -58,12 +58,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">状态</label>
                 <div class="layui-input-block">
-                    <select name="status">
-                        <option value=""></option>
-                        <option value="0">Offline</option>
-                        <option value="1">Online</option>
-                        <option value="2">Draft</option>
-                    </select>
+                    <select name="status" id="status0" lay-filter="status0"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -85,7 +80,7 @@
 
 <div class="table_div">
     <div id="searchParam" sa:hasPermission="shopProduct:list">
-        <form class="layui-form ">
+        <form class="layui-form " id="sp1" lay-filter="sp1">
             <div class="layui-form-item">
                 <div class="layui-inline">
                     <label class="layui-form-label">店铺ID</label>
@@ -101,12 +96,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">状态</label>
                     <div class="layui-input-inline">
-                        <select name="status">
-                            <option value=""></option>
-                            <option value="0">Offline</option>
-                            <option value="1">Online</option>
-                            <option value="2">Draft</option>
-                        </select>
+                        <select name="status" id="status1" lay-filter="status1"></select>
                     </div>
                 </div>
                 <div class="layui-inline ">
@@ -139,6 +129,13 @@
         var table = layui.table;
         var form = layui.form;
         var layer = layui.layer;
+        var dictTypes = ['productStatus', 'enable', 'shopType', 'active'];
+
+        // 一次性加载
+        loadDicts(dictTypes, function () {
+            renderDictSelect('productStatus', $('#status0'), '请选择', 'af1');
+            renderDictSelect('productStatus', $('#status1'), '请选择', 'sp1');
+        })
         //加载table
         var tableIns1 = table.render({
             elem: '#showTable'
@@ -162,7 +159,7 @@
                     {field: 'productName', title: '产品名称', sort: true},
                     {field: 'platformProductId', title: '平台产品ID', sort: true},
                     {field: 'detailUrl', title: '平台商品链接', sort: true},
-                    {field: 'status', title: '状态', sort: true,templet:function(item){return getProductStatus(item.status);}},
+                    {field: 'status', title: '状态', sort: true,templet:function(item){return getDictLabel('productStatus',item.status);}},
                     {field: 'updatedBy', title: '更新人', sort: true},
                     {field: 'updatedTime', width:180, title: '更新时间', sort: true},
                     {width: 180, toolbar: "#tool", title: '操作'}

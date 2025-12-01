@@ -10,29 +10,19 @@
 <div class="panel panel-default operation" hidden>
     <div class="panel-heading title"></div>
     <div class="layui-card-body">
-        <form class="layui-form " action="" lay-filter="info">
+        <form class="layui-form " action="" id="addFrom" lay-filter="info">
             <input name="id" hidden/>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">目标币种</label>
                 <div class="layui-input-inline">
-                    <select name="toCurrency" lay-filter="aihao">
-                        <option value=""></option>
-                        <option value="CNY">CNY</option>
-                        <option value="PHP">PHP</option>
-                        <option value="USD">USD</option>
-                    </select>
+                    <select name="toCurrency" id="toCurrency0" lay-filter="toCurrency0"></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">汇率币种</label>
                 <div class="layui-input-inline">
-                    <select name="fromCurrency" lay-filter="aihao">
-                        <option value=""></option>
-                        <option value="CNY">CNY</option>
-                        <option value="PHP">PHP</option>
-                        <option value="USD">USD</option>
-                    </select>
+                    <select name="fromCurrency" id="fromCurrency0" lay-filter="fromCurrency0"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -66,12 +56,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label">目标币种</label>
                 <div class="layui-input-inline">
-                    <select name="toCurrency">
-                        <option value=""></option>
-                        <option value="CNY">CNY</option>
-                        <option value="PHP">PHP</option>
-                        <option value="USD">USD</option>
-                    </select>
+                    <select name="toCurrency" id="toCurrency1" lay-filter="toCurrency1"></select>
                 </div>
             </div>
 
@@ -79,12 +64,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label">汇率币种</label>
                 <div class="layui-input-inline">
-                    <select name="fromCurrency">
-                        <option value=""></option>
-                        <option value="CNY">CNY</option>
-                        <option value="PHP">PHP</option>
-                        <option value="USD">USD</option>
-                    </select>
+                    <select name="fromCurrency" id="fromCurrency1" lay-filter="fromCurrency1"></select>
                 </div>
             </div>
 
@@ -135,6 +115,16 @@
       var layer = layui.layer;
       var formSelects = layui.formSelects;
       var laydate = layui.laydate;
+
+        var dictTypes = ['purchaseStatus', 'enable', 'shopType', 'currency'];
+
+        // 一次性加载
+        loadDicts(dictTypes, function () {
+            renderDictSelect('currency', $('#toCurrency0'), '请选择', 'addForm');
+            renderDictSelect('currency', $('#fromCurrency0'), '请选择', 'addForm');
+            renderDictSelect('currency', $('#toCurrency1'), '请选择', 'searchForm');
+            renderDictSelect('currency', $('#fromCurrency1'), '请选择', 'searchForm');
+        })
 
         //初始化laydate实例
         laydate.render({

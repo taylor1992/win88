@@ -10,7 +10,7 @@
 <div class="panel panel-default operation" hidden>
     <div class="panel-heading title"></div>
     <div class="layui-card-body">
-        <form class="layui-form " action="" lay-filter="info">
+        <form class="layui-form "  id="addForm" action="" lay-filter="info">
             <input name="id" hidden/>
             <div class="layui-form-item">
                 <label class="layui-form-label">采购单号</label>
@@ -78,14 +78,14 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">物流单号（海运/空运）</label>
+                <label class="layui-form-label">物流单号</label>
                 <div class="layui-input-block">
                     <input type="logisticsTrackingNo" name="logisticsTrackingNo" placeholder="请输入物流单号（海运/空运）"
                            autocomplete="off" class="layui-input disabled">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">中国出库/发货时间</label>
+                <label class="layui-form-label">中国时间</label>
                 <div class="layui-input-block">
                     <input type="shipOutTime" name="shipOutTime" placeholder="请输入中国出库/发货时间"
                            autocomplete="off" class="layui-input disabled">
@@ -99,11 +99,9 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">采购状态：0草稿 1已提交 2运输中 3部分入库 4已入库</label>
+                <label class="layui-form-label">采购状态</label>
                 <div class="layui-input-block">
-                    <input type="status" name="status"
-                           placeholder="请输入采购状态：0草稿 1已提交 2运输中 3部分入库 4已入库" autocomplete="off"
-                           class="layui-input disabled">
+                    <select name="purchaseStatus" id="addPurchaseStatus" lay-filter="addPurchaseStatus"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -160,6 +158,13 @@
         var table = layui.table;
         var form = layui.form;
         var layer = layui.layer;
+        var dictTypes = ['purchaseStatus', 'enable', 'productStatus', 'active'];
+
+        // 一次性加载
+        loadDicts(dictTypes, function () {
+            renderDictSelect('purchaseStatus', $('#addPurchaseStatus'), '请选择', 'addForm');
+        })
+
         //加载table
         var tableIns1 = table.render({
             elem: '#showTable'
@@ -193,9 +198,8 @@
                     {field: 'warehouseInTime', title: '菲律宾仓库入库时间', sort: true},
                     {field: 'status', title: '采购状态：0草稿 1已提交 2运输中 3部分入库 4已入库', sort: true},
                     {field: 'remark', title: '备注', sort: true},
-                    {field: 'createdTime', title: '创建时间', sort: true},
-                    {field: 'updatedTime', title: '更新时间', sort: true},
                     {field: 'updatedBy', title: '更新人', sort: true},
+                    {field: 'updatedTime', title: '更新时间', sort: true},
                     {width: 180, toolbar: "#tool", title: '操作'}
                 ]
             ]
