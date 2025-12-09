@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Movement Log</title>
+    <div th:replace="~{layout}"></div>
+</head>
+<body>
+
+<div class="table_div">
+
+    <!-- Search Area -->
+    <div id="searchParam" sa:hasPermission="inventoryLog:list">
+        <form class="layui-form" lay-filter="searchForm" style="margin-top: 10px;">
+            <div class="layui-form-item">
+
+                <input type="hidden" name="warehouseId" id="warehouseIdHid" th:value="${warehouseId}">
+                <input type="hidden" name="skuId" id="skuIdHid" th:value="${skuId}">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 110px;">Change Type</label>
+                    <div class="layui-input-inline" style="width: 220px;">
+                        <select name="changeType" id="changeType" lay-filter="changeType"></select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label"  style="width: 110px;">Created Time</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" placeholder="Select start time" class="layui-input" id="createdTimeBegin" name="createdTimeBegin">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input" placeholder="Select end time" id="createdTimeEnd" name="createdTimeEnd">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"
+                            lay-submit lay-filter="data-search-btn">
+                        <i class="layui-icon">&#xe615;</i> Search
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <table id="showTable" lay-filter="showTable"></table>
+
+</div>
+
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-xs" lay-event="look">View</a>
+</script>
+
+</body>
+</html>
+<script>
+    // 这里控制语言：'en' 或 'zh'
+    window.APP_LANG = 'en';
+</script>
+<script th:src="@{/static/js/layui.i18n.js(v=${T(System).currentTimeMillis()})}"></script>
+<script>
+    layui.use(function () {
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        // 开始时间
+        LaydateEn.render({
+            elem: '#createdTimeBegin'
+            // 也可以覆盖默认 format 等：
+            // format: 'yyyy/MM/dd HH:mm'
+        });
+
+        // 结束时间
+        LaydateEn.render({
+            elem: '#createdTimeEnd'
+        });
+
+        loadDict('InventoryChangeType');
+        renderDictSelect('InventoryChangeType', $('#changeType'), 'All Types');
+
+        var warehouseId = $('#warehouseIdHid').val();
+        var skuId = $('#skuIdHid').val();
+
+        // Table render
+        var tableIns = table.render({
+            elem: '#showTable',
+            contentType: 'application/json',
+            page: true,
+            method: 'POST',
+            url: ctx + 'inventoryLog/listByPage',
+            where: {
+                warehouseId: warehouseId,
+                skuId: skuId
+            },
+            parseData: function (res) {
+                return {
+                    code: res.code,
+                    msg: res.msg,
+                    count: res.data ? res.data.total : 0,
+                    data: res.data ? res.data.records : []
+                };
+            },
+            cols: [
+                [
+                    {type: 'numbers', title: '#'},
+                    {field: 'changeQty', title: 'Change Qty'},
+                    {
+                        field: 'changeType', title: 'Change Type', templet: function (param) {
+                            return getDictLabel('InventoryChangeType', param.changeType);
+                        }
+                    },
+                    {field: 'qtyBefore', title: 'Qty Before'},
+                    {field: 'qtyAfter', title: 'Qty After'},
+                    {field: 'remark', title: 'Remark'},
+                    {field: 'createdBy', title: 'Created By'},
+                    {field: 'createdTime', title: 'Created Time'}
+                ]
+            ]
+        });
+
+        // Search
+        form.on('submit(data-search-btn)', function (data) {
+            var start = data.field.createdTimeBegin;
+            var end = data.field.createdTimeEnd;
+
+            if (start && end && new Date(end) < new Date(start)) {
+                layer.msg('End time cannot be earlier than start time.', {icon: 5});
+                return false; // 阻止提交
+            }
+            tableIns.reload({
+                page: {curr: 1},
+                where: data.field
+            });
+            return false;
+        });
+
+        // Row Tool: View
+        table.on('tool(showTable)', function (obj) {
+            layer.alert(JSON.stringify(obj.data, null, 2), {
+                title: "Movement Detail"
+            });
+        });
+
+    });
+</script>

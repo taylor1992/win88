@@ -36,3 +36,15 @@
     overflow: hidden;
     box-sizing: border-box;
 }
+.layui-form-required {
+    color: #ff5722 !important;  /* layui 的主题橙色 */
+    font-size: 14px;
+    margin-left: 4px;
+}
+.layui-form-label .layui-form-required {
+    position: absolute;
+    right: 5px;
+}
+.layui-form-label {
+    position: relative;
+}

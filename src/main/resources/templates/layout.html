@@ -7,7 +7,7 @@
     <!-- 引入公共的 CSS 文件 -->
     <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}"/>
     <link rel="stylesheet" th:href="@{/static/layui/css/formSelects-v4.css}"/>
-    <link rel="stylesheet" th:href="@{/static/css/custom.form.css}">
+    <link rel="stylesheet" th:href="@{/static/css/custom.form.css(v=${T(System).currentTimeMillis()})}">
 </head>
 <body>
 <!-- 页面内容 -->
@@ -17,6 +17,8 @@
 <script th:src="@{/static/js/core.util.js}"></script>
 <script th:src="@{/static/js/common.js(v=${T(System).currentTimeMillis()})}"></script>
 <script th:src="@{/static/js/dict.js(v=${T(System).currentTimeMillis()})}"></script>
+<script th:src="@{/static/js/laydate-en.js(v=${T(System).currentTimeMillis()})}"></script>
+
 <!--回显列表中的checkbox-->
 <script type="text/html" id="checkbox_status">
     <input type="checkbox" name="status" value="{{= d.status }}" title="开启|关闭" lay-skin="switch" disabled {{d.status==1?"checked" : "" }}>

@@ -1,5 +1,8 @@
 package com.company.project.common.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 public class DictionaryEnums {
 
     /** ================= 店铺类型 ================= */
@@ -70,6 +73,20 @@ public class DictionaryEnums {
         public String getLabel() { return label; }
     }
 
+    public enum WarehouseEnum {
+        LAS_PINAS(1, "Las Piñas,Manila");
+
+        private final int code;
+        private final String label;
+
+        WarehouseEnum(int code, String label) {
+            this.code = code;
+            this.label = label;
+        }
+        public int getCode() { return code; }
+        public String getLabel() { return label; }
+    }
+
     public enum PurchaseStatusEnum {
         DRAFT(0, "Draft"),
         SUBMIT(1, "Submit"),
@@ -88,6 +105,36 @@ public class DictionaryEnums {
         public String getLabel() { return label; }
     }
 
+    @AllArgsConstructor
+    @Getter
+    public enum InventoryChangeType {
+
+        PURCHASE_IN(1, "采购入库","Purchase in"),
+        SALES_OUT(2, "销售出库","Sales out"),
+        MANUAL_ADJUST(3, "手工调整","Manual adjust"),
+        STOCK_TAKE(4, "盘点调整","Stock take"),
+        INITIALIZE(5, "初始化库存","Initialize"),
+
+        // 可选扩展
+        ORDER_RESERVE(6, "订单占用库存","Order reserve"),
+        ORDER_RELEASE(7, "订单释放库存","Order release"),
+        TRANSFER_IN(8, "调拨入库","Transfer in"),
+        TRANSFER_OUT(9, "调拨出库","Transfer out"),
+        RETURN_IN(10, "退货入库","Return in"),
+        DAMAGED_OUT(11, "报损出库","Damaged out"),;
+
+        private final int code;
+        private final String desc;
+        private final String descEn;
+
+        public static InventoryChangeType fromCode(Integer code) {
+            for (InventoryChangeType t : values()) {
+                if (t.code == code) return t;
+            }
+            return null;
+        }
+    }
+
     public enum CurrencyEnum {
         CNY("CNY", "CNY"),
         PHP("PHP", "PHP"),
@@ -97,6 +144,36 @@ public class DictionaryEnums {
         private final String code;
         private final String label;
         CurrencyEnum(String code, String label) {
+            this.code = code;
+            this.label = label;
+        }
+        public String getCode() { return code; }
+        public String getLabel() { return label; }
+    }
+
+    public enum LogisticsMethodEnum {
+        AIR("AIR", "AIR"),
+        SEA("SEA", "SEA"),
+        ;
+
+        private final String code;
+        private final String label;
+        LogisticsMethodEnum(String code, String label) {
+            this.code = code;
+            this.label = label;
+        }
+        public String getCode() { return code; }
+        public String getLabel() { return label; }
+    }
+
+    public enum AllocationMethodEnum {
+        QTY("QTY", "QTY"),
+        WEIGHT("WEIGHT", "WEIGHT"),
+        ;
+
+        private final String code;
+        private final String label;
+        AllocationMethodEnum(String code, String label) {
             this.code = code;
             this.label = label;
         }

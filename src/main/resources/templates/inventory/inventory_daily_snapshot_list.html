@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--公共模块-->
+    <div th:replace="~{layout}"></div>
+<body>
+
+<div class="layui-card">
+    <div class="layui-card-header">
+        <form class="layui-form" id="searchForm" lay-filter="searchForm">
+            <div class="layui-form-item">
+
+                <!-- Snapshot Date range -->
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 110px;">Snapshot Date</label>
+                    <div class="layui-input-inline">
+                        <input type="text"
+                               id="snapshotDateBegin"
+                               name="snapshotDateBegin"
+                               placeholder="Start date"
+                               autocomplete="off"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline">
+                        <input type="text"
+                               id="snapshotDateEnd"
+                               name="snapshotDateEnd"
+                               placeholder="End date"
+                               autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 110px;">Internal SKU</label>
+                    <div class="layui-input-inline" style="width: 220px;">
+                        <select name="skuId" id="skuId" lay-filter="skuId"></select>
+                    </div>
+                </div>
+
+                <!-- Search buttons -->
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit lay-filter="doSearch">
+                        <i class="layui-icon">&#xe615;</i> Search
+                    </button>
+                    <button type="reset" class="layui-btn layui-btn-primary">
+                        Reset
+                    </button>
+                    <button class="layui-btn" lay-submit lay-filter="doSnapshot" sa:hasPermission="inventoryDailySnapshot:sync">
+                        <i class="layui-icon">&#xe62c;</i> Snapshot
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="layui-card-body">
+        <table id="snapshotTable" lay-filter="snapshotTable"></table>
+    </div>
+</div>
+<script>
+    // 这里控制语言：'en' 或 'zh'
+    window.APP_LANG = 'en';
+</script>
+<script th:src="@{/static/js/layui.i18n.js(v=${T(System).currentTimeMillis()})}"></script>
+<script>
+    layui.use(['table', 'form', 'laydate'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var $ = layui.$;
+
+        if (typeof renderDictSelect === 'function') {
+            renderDictSelect('warehouse', $('#warehouseId'), 'All Warehouses');
+            renderDictSelect('internalSku', $('#skuId'), 'All SKU');
+        }
+        LaydateEn.render({
+            elem: '#snapshotDateBegin',
+            // 也可以覆盖默认 format 等：
+            format: 'yyyy/MM/dd'
+        });
+        LaydateEn.render({
+            elem: '#snapshotDateEnd',
+            // 也可以覆盖默认 format 等：
+            format: 'yyyy/MM/dd'
+        });
+
+        // Table render
+        var tableIns = table.render({
+            elem: '#snapshotTable',
+            id: 'snapshotTable',
+            contentType: 'application/json',
+            page: true,
+            url: ctx + 'inventoryDailySnapshot/listByPage',  // TODO: 按你实际接口修改
+            method: 'POST',
+            parseData: function (res) {
+                // 适配你统一的 DataResult 结构
+                return {
+                    code: res.code,
+                    msg: res.msg,
+                    count: (!res.data ? 0 : res.data.total),
+                    data: (!res.data ? [] : res.data.records)
+                };
+            },
+            cols: [
+                [
+                    {type: 'numbers', title: '#', width: 50},
+                    {field: 'snapshotDate', title: 'Snapshot Date'},
+                    {
+                        field: 'warehouseId', title: 'Warehouse', sort: true, templet: function (param) {
+                            return getDictLabel('warehouse', param.warehouseId);
+                        }
+                    },
+                    {
+                        field: 'skuId', title: 'Internal SKU', width: 300, sort: true, templet: function (param) {
+                            return getDictLabel('internalSku', param.skuId);
+                        }
+                    },
+                    {field: 'qtyOnHand', title: 'On-hand Qty'},
+                    {field: 'qtyReserved', title: 'Reserved Qty'},
+                    {field: 'qtyAvailable', title: 'Available Qty'},
+                    {field: 'createdTime', title: 'Created Time', width: 180}
+                ]
+            ],
+            where: form.val('searchForm')
+        });
+
+        // Search submit
+        form.on('submit(doSearch)', function (data) {
+            // 这里也可以做一下“结束日期不能小于开始日期”的校验
+            var begin = data.field.snapshotDateBegin;
+            var end = data.field.snapshotDateEnd;
+            if (begin && end && begin > end) {
+                layer.msg('End date cannot be earlier than start date.');
+                return false;
+            }
+
+            tableIns.reload({
+                where: data.field,
+                page: {curr: 1}
+            });
+            return false;
+        });
+
+        form.on('submit(doSnapshot)', function (data) {
+            // 这里也可以做一下“结束日期不能小于开始日期”的校验
+            CoreUtil.sendPost(ctx + 'inventoryDailySnapshot/sync', {
+            }, function (res) {
+                layer.msg(res.msg || 'Snapshot successful.', {time: 1000}, function () {
+                    tableIns.reload();
+                });
+            });
+            return false;
+        });
+
+    });
+</script>
+
+</body>
+</html>

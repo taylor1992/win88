@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory Management</title>
+    <!-- common layout -->
+    <div th:replace="~{layout}"></div>
+</head>
+<body>
+
+<!-- 这里只有列表，没有单独的新增/编辑表单区域，所以不需要 .operation 区块 -->
+
+<div class="table_div">
+    <div id="searchParam" sa:hasPermission="inventory:list">
+        <form class="layui-form" lay-filter="searchForm">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">Warehouse</label>
+                    <div class="layui-input-inline">
+                        <select name="warehouseId" id="warehouseId"></select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">Internal SKU</label>
+                    <div class="layui-input-inline">
+                        <select name="skuId" id="internalSku" lay-filter="internalSku"></select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"
+                            lay-submit lay-filter="data-search-btn">
+                        <i class="layui-icon">&#xe615;</i> Search
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <table class="layui-table" id="showTable" lay-filter="showTable"></table>
+</div>
+
+<!-- 顶部工具条（这里不提供新增/删除，只保留容器，方便以后扩展） -->
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container oper">
+        <!-- 如果以后需要导出、刷新等按钮可以加在这里 -->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="export">Export</button>-->
+    </div>
+</script>
+
+<!-- 行工具条：查看库存流水 / 手工调整 -->
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-xs" lay-event="log" sa:hasPermission="inventoryLog:list">Stock Movement</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="adjust" sa:hasPermission="inventory:adjust">Adjust
+        Stock</a>
+</script>
+
+</body>
+</html>
+<script>
+    // 这里控制语言：'en' 或 'zh'
+    window.APP_LANG = 'en';
+</script>
+<script th:src="@{/static/js/layui.i18n.js(v=${T(System).currentTimeMillis()})}"></script>
+<script>
+    layui.use(function () {
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        // Render warehouse select (dictionary)
+        // 字典类型 'warehouse' 自己按后端实际来
+        if (typeof renderDictSelect === 'function') {
+            renderDictSelect('warehouse', $('#warehouseId'), 'All Warehouses');
+            renderDictSelect('internalSku', $('#internalSku'), 'All SKU');
+        }
+
+        // Table render
+        var tableIns1 = table.render({
+            elem: '#showTable',
+            contentType: 'application/json',
+            page: true,
+            url: ctx + 'inventory/listByPage',
+            method: 'POST',
+            parseData: function (res) {
+                return {
+                    code: res.code,
+                    msg: res.msg,
+                    count: CoreUtil.isEmpty(res.data) ? 0 : res.data.total,
+                    data: CoreUtil.isEmpty(res.data) ? null : res.data.records
+                }
+            },
+            cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    {field: 'warehouseId', title: 'Warehouse', sort: true,templet:function (param) {
+                            return getDictLabel('warehouse',param.warehouseId);
+                        }},
+                    {field: 'skuId', title: 'Internal SKU',width:350, sort: true,templet:function (param) {
+                            return getDictLabel('internalSku',param.skuId);
+                        }},
+                    {field: 'qtyOnHand', title: 'On-hand Qty', sort: true},
+                    {field: 'qtyAvailable', title: 'Available Qty', sort: true},
+                    {field: 'updatedBy', title: 'Updated By', sort: true},
+                    {field: 'updatedTime',width:180, title: 'Updated Time', sort: true},
+                    {width: 270, toolbar: '#tool', title: 'Actions'}
+                ]
+            ],
+            toolbar: '#toolbar',
+            where: form.val('searchForm')
+        });
+
+        // Top toolbar (if later you add buttons like export, handle here)
+        table.on('toolbar(showTable)', function (obj) {
+            switch (obj.event) {
+                // case 'export':
+                //   // TODO export logic
+                //   break;
+            }
+        });
+
+        // Row tools: Stock Movement, Adjust Stock
+        table.on('tool(showTable)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                case 'log':
+                    openMovementLogDialog(data);
+                    break;
+                case 'adjust':
+                    openAdjustDialog(data);
+                    break;
+            }
+        });
+
+        // Search
+        form.on('submit(data-search-btn)', function (data) {
+            tableIns1.reload({
+                page: {curr: 1},
+                where: data.field
+            });
+            return false;
+        });
+
+        // Open stock movement log dialog
+        function openMovementLogDialog(row) {
+            var skuName  = getDictLabel('internalSku',row.skuId);
+            layer.open({
+                type: 2,
+                title: 'Stock Movement Log - ' + (skuName || ''),
+                area: ['80%', '80%'],
+                content: ctx + 'index/inventory-log?warehouseId=' + row.warehouseId + '&skuId=' + row.skuId
+            });
+        }
+
+        // Manual Stock Adjustment dialog (same logic as你英文版)
+        function openAdjustDialog(row){
+            var skuName = getDictLabel('internalSku', row.skuId) || row.skuCode || '';
+            var currentQty = row.qtyOnHand || 0;
+
+            // 自定义内容：数量 + 备注
+            var html =
+                '<div style="padding: 20px 30px 10px 30px;">' +
+                '  <form class="layui-form" lay-filter="adjustForm">' +
+
+                '    <div class="layui-form-item">' +
+                '      <label class="layui-form-label" style="width:120px;">Change Qty</label>' +
+                '      <div class="layui-input-block" style="margin-left:150px;">' +
+                '        <input type="number" id="adjustQty" ' +
+                '               placeholder="Enter a non-zero integer" ' +
+                '               autocomplete="off" class="layui-input" />' +
+                '      </div>' +
+                '    </div>' +
+
+                '    <div class="layui-form-item">' +
+                '      <label class="layui-form-label" style="width:120px;">Remark</label>' +
+                '      <div class="layui-input-block" style="margin-left:150px;">' +
+                '        <textarea id="adjustRemark" ' +
+                '                  placeholder="Enter adjustment remark" ' +
+                '                  class="layui-textarea"></textarea>' +
+                '      </div>' +
+                '    </div>' +
+
+                '  </form>' +
+                '</div>';
+
+            layer.open({
+                type: 1,
+                title: 'Adjust Stock: ' + skuName + ' (Current: ' + currentQty + ')',
+                area: ['500px', '300px'],
+                content: html,
+                btn: ['Confirm', 'Cancel'],
+                yes: function(index){
+                    var qtyStr = $('#adjustQty').val().trim();
+                    var remark = $('#adjustRemark').val().trim();
+                    var changeQty = parseInt(qtyStr, 10);
+
+                    // 校验数量是否填写
+                    if (!qtyStr) {
+                        layer.msg('Please enter change quantity.');
+                        return;
+                    }
+                    // 校验数量是否合法
+                    if (isNaN(changeQty) || changeQty === 0) {
+                        layer.msg('Please enter a non-zero integer.');
+                        return;
+                    }
+                    // 校验备注是否填写
+                    if (!remark) {
+                        layer.msg('Please enter adjustment remark.');
+                        return;
+                    }
+
+                    // 通过所有校验再关闭弹层
+                    layer.close(index);
+
+                    // 提交
+                    CoreUtil.sendPost(ctx + 'inventory/adjust', {
+                        warehouseId: row.warehouseId,
+                        skuId: row.skuId,
+                        changeQty: changeQty,
+                        remark: remark
+                    }, function (res) {
+                        layer.msg(res.msg || 'Adjustment successful.', {time: 1000}, function () {
+                            tableIns1.reload();
+                        });
+                    });
+                }
+            });
+        }
+
+    });
+</script>

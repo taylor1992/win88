@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>采购订单明细</title>
+    <div th:replace="~{layout}"></div>
+    <style>
+        /* 只针对采购明细弹窗，避免影响别的表格 */
+        .purchase-item-dialog .layui-table-view .layui-table-box,
+        .purchase-item-dialog .layui-table-view .layui-table-body,
+        .purchase-item-dialog .layui-table-view .layui-table-main {
+            overflow: visible;       /* 允许内容溢出显示 */
+        }
+
+        /* 单元格也要允许内容溢出，否则左右可能被截断 */
+        .purchase-item-dialog .layui-table-view .layui-table-cell {
+            overflow: visible !important;
+        }
+
+        /* 单元格保持布局，不允许 select 自己撑大 */
+        .layui-table-view .layui-table-cell .layui-form-select {
+            width: 100% !important;     /* select 不超过单元格 */
+            display: inline-block;
+            overflow: visible !important;
+        }
+
+        /* 下拉菜单（选项列表）允许超出表格显示 */
+        .layui-form-select dl {
+            min-width: 120px;           /* 你可以调小或调大 */
+            position: absolute;
+            left: 0;
+            top: 38px;                  /* 下拉位置 */
+            z-index: 99999;             /* 保证浮在上层 */
+        }
+
+        .layui-table-view .layui-table-cell .layui-form-select .layui-input {
+            height: 28px;        /* 控制高度 */
+            line-height: 28px;
+        }
+
+
+    </style>
+
+</head>
+<body class="layui-layout-body">
+
+<!-- 用 hidden 埋数据，避免在 <script> 里写 Thymeleaf 表达式 -->
+<input type="hidden" id="orderIdHidden" th:value="${orderId}"/>
+<input type="hidden" id="statusIdHid" th:value="${status}"/>
+
+<div class="layui-card purchase-item-dialog">
+    <div class="layui-card-header">
+        <div class="layui-btn-group" style="float:right;" th:if="${status != 4}">
+            <button class="layui-btn layui-btn-sm" id="btnAddRow">新增一行</button>
+            <button class="layui-btn layui-btn-normal layui-btn-sm" id="btnSaveAll">保存全部</button>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <table id="itemTable" lay-filter="itemTable"></table>
+    </div>
+</div>
+
+<!-- 注意：这里不要任何 th:inline / th:*，纯 JS -->
+<script>
+    var orderId = document.getElementById('orderIdHidden').value || '';
+    var statusId = document.getElementById('statusIdHid').value || '';
+
+    // ★ 内部 SKU 使用的字典类型（跟你后端对上）
+    var DICT_INTERNAL_SKU = 'internalSku';
+
+    layui.use(['table', 'layer', 'form'], function () {
+        var table = layui.table;
+        var layer = layui.layer;
+        var form = layui.form;
+        var $ = layui.$;
+
+        var hasInitEmptyRow = false;
+
+        // ★ 先把内部SKU字典加载好，再渲染表格
+        loadDict(DICT_INTERNAL_SKU, function () {
+            renderItemTable();
+        });
+
+        // 用字典 + 当前行数据生成下拉 HTML
+        function buildSkuSelect(d) {
+            var list = DictCache[DICT_INTERNAL_SKU] || [];
+            var cur = d.skuId == null ? '' : String(d.skuId);
+            var html = [];
+
+            html.push(
+                '<select class="layui-input sku-select"' +
+                '        lay-filter="skuSelect"' +
+                '        data-index="' + d.LAY_TABLE_INDEX + '">'
+            );
+            html.push('<option value="">请选择</option>');
+
+            layui.each(list, function (i, item) {
+                var val = String(item.value);
+                var selected = (val === cur) ? ' selected' : '';
+                html.push('<option value="' + val + '"' + selected + '>' + item.label + '</option>');
+            });
+
+            html.push('</select>');
+            return html.join('');
+        }
+
+        function renderItemTable() {
+            table.render({
+                elem: '#itemTable',
+                id: 'itemTable',
+                url: ctx + 'purchaseOrderItem/list?orderId=' + orderId,
+                method: 'get',
+                page: false,
+                even: true,
+                height: 'full-150',
+                parseData: function (res) {
+                    return {
+                        code: res.code === 0 ? 0 : 1,
+                        msg: res.msg || '',
+                        data: res.data || []
+                    };
+                },
+                cols: [
+                    [
+                        {type: 'numbers', title: '#', width: 40},
+
+                        // ★ skuId 改成下拉字典列
+                        {
+                            field: 'skuId',
+                            title: '内部SKU',
+                            width: 320,
+                            templet: function (d) {
+                                return buildSkuSelect(d);
+                            }
+                        },
+
+                        {field: 'quantity', title: '数量', edit: 'text'},
+                        {field: 'unitPrice', title: '单价', edit: 'text'},
+                        {field: 'amountGoodsSubtotal', title: '小计'},
+                        {field: 'amountFreightAlloc', title: '分摊运费'},
+                        {field: 'amountOtherAlloc', title: '分摊其他费用'},
+                        {field: 'weightKgPerUnit', title: '单件重量kg', edit: 'text'},
+                        {field: 'amountCostTotal', title: '总计'},
+                        {field: 'remark', title: '备注', edit: 'text'},
+                        {
+                            title: '操作',
+                            width: 80,
+                            align: 'center',
+                            templet: function () {
+                                if(statusId != 4){
+                                    return '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delRow">删除</a>';
+                                }
+                                return '';
+                            }
+                        }
+                    ]
+                ],
+                done: function (res) {
+                    form.render('select');   // 渲染下拉
+
+                    // 首次无数据时补一行
+                    if (!hasInitEmptyRow && (!res.data || res.data.length === 0)) {
+                        hasInitEmptyRow = true;
+                        addEmptyRow();
+                    }
+                }
+            });
+        }
+
+
+        function addEmptyRow() {
+            var data = table.cache['itemTable'] || [];
+            data.push({});  // 需要默认值可以写在这里
+
+            table.reload('itemTable', {
+                url: null,      // ★ 阻止再次请求接口
+                data: data,
+                done: function () {
+                    form.render('select');   // 重新渲染下拉（会根据 d.skuId 选中）
+                }
+            });
+        }
+
+        $('#btnAddRow').on('click', function () {
+            addEmptyRow();
+        });
+
+        // 删除当前行
+        table.on('tool(itemTable)', function (obj) {
+            if (obj.event === 'delRow') {
+                obj.del();
+            }
+        });
+
+        // 监听 SKU 下拉变化，写回 table.cache
+        form.on('select(skuSelect)', function (data) {
+            var $select = $(data.elem);
+
+            // tr 上的 data-index 就是当前行下标
+            var index = $select.closest('tr').attr('data-index');
+            var rows = table.cache['itemTable'] || [];
+            var row = rows[index];
+
+            if (row) {
+                row.skuId = data.value;   // ★ 把选中的值存到缓存里
+            }
+        });
+
+
+
+        // 保存全部
+        $('#btnSaveAll').on('click', function () {
+            var rows = table.cache['itemTable'] || [];
+            var items = [];
+
+            layui.each(rows, function (idx, row) {
+                if (!row) return;
+
+                // ★ skuId 必填
+                if (!row.skuId || !row.quantity || !row.unitPrice) {
+                    return;
+                }
+                items.push({
+                    id: row.id,
+                    skuId: row.skuId,
+                    quantity: parseInt(row.quantity, 10),
+                    unitPrice: row.unitPrice,
+                    amountFreightAlloc: row.amountFreightAlloc,
+                    amountOtherAlloc: row.amountOtherAlloc,
+                    weightKgPerUnit: row.weightKgPerUnit,
+                    remark: row.remark
+                });
+            });
+
+            if (items.length === 0) {
+                layer.msg('请至少填写一条完整的明细（SKU / 数量 / 单价）');
+                return;
+            }
+
+            $.ajax({
+                url: ctx + 'purchaseOrderItem/saveBatch',
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    purchaseOrderId: orderId,
+                    items: items
+                }),
+                success: function (res) {
+                    if (res.code === 0) {
+                        layer.msg('保存成功', {time: 1000}, function () {
+                            // 重新拉一次数据
+                            renderItemTable();
+                        });
+                    } else {
+                        layer.msg(res.msg || '保存失败');
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

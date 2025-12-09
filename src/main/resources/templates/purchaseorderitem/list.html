@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>采购明细</title>
+    <link rel="stylesheet" th:href="@{/static/layui/css/layui.css}">
+</head>
+<body class="layui-layout-body">
+
+<div class="layui-card">
+    <div class="layui-card-header">新增采购明细</div>
+    <div class="layui-card-body">
+        <form class="layui-form" id="addItemForm" lay-filter="addItemForm">
+            <input type="hidden" name="purchaseOrderId" th:value="${purchaseOrderId}"/>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">内部SKU</label>
+                <div class="layui-input-block">
+                    <input type="text" name="skuId" lay-verify="required"
+                           placeholder="请输入内部SKU ID" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">数量</label>
+                <div class="layui-input-block">
+                    <input type="number" name="quantity" lay-verify="required|number"
+                           placeholder="数量" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">单价</label>
+                <div class="layui-input-block">
+                    <input type="number" step="0.01" name="unitPrice"
+                           lay-verify="required|number" placeholder="单价（不含运费）" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <input type="text" name="remark" placeholder="备注（可选）"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="submitItem">保存明细</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="layui-card" style="margin-top: 10px;">
+    <div class="layui-card-header">采购明细列表</div>
+    <div class="layui-card-body">
+        <table class="layui-hide" id="itemTable" lay-filter="itemTable"></table>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    layui.use(['table', 'form', 'layer'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        var purchaseOrderId = /*[[${purchaseOrderId}]]*/ 0;
+
+        // 明细表格
+        table.render({
+            elem: '#itemTable',
+            url: ctx + '/purchaseItem/listByPage',
+            method: 'post',
+            where: {purchaseOrderId: purchaseOrderId},
+            page: true,
+            cols: [[
+                {type: 'numbers', title: '#'},
+                {field: 'skuId', title: '内部SKU'},
+                {field: 'quantity', title: '数量'},
+                {field: 'unitPrice', title: '单价'},
+                {field: 'amountGoodsSubtotal', title: '商品小计'},
+                {field: 'remark', title: '备注'},
+                {field: 'createdTime', title: '创建时间'}
+            ]]
+        });
+
+        // 提交新增明细
+        form.on('submit(submitItem)', function (data) {
+            $.post(ctx + '/purchaseItem/save', data.field, function (res) {
+                if (res.code === 0) {        // 按你项目的成功码自行调整
+                    layer.msg('保存成功');
+                    table.reload('itemTable', {page: {curr: 1}});
+                    document.getElementById('addItemForm').reset();
+                } else {
+                    layer.msg(res.msg || '保存失败');
+                }
+            });
+            return false; // 阻止表单默认提交
+        });
+    });
+</script>
+
+</body>
+</html>

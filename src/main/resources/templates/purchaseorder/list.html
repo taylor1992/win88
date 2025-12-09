@@ -15,66 +15,45 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">采购单号</label>
                 <div class="layui-input-block">
-                    <input type="purchaseOrderNo" name="purchaseOrderNo" placeholder="请输入采购单号" autocomplete="off"
-                           class="layui-input disabled">
+                    <input type="purchaseOrderNo" name="purchaseOrderNo" placeholder="请输入采购单号" autocomplete="off" lay-verify="required" lay-verType="tips" class="layui-input disabled">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">供应商 ID</label>
+                <label class="layui-form-label">供应商</label>
                 <div class="layui-input-block">
-                    <input type="supplierId" name="supplierId" placeholder="请输入供应商 ID" autocomplete="off"
-                           class="layui-input disabled">
+                    <select name="supplierId" id="supplier" lay-verify="required" lay-verType="tips"  lay-filter="supplier"></select>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">采购币种，如 CNY/USD</label>
+                <label class="layui-form-label">采购币种</label>
                 <div class="layui-input-block">
-                    <input type="currencyCode" name="currencyCode" placeholder="请输入采购币种，如 CNY/USD"
-                           autocomplete="off" class="layui-input disabled">
+                    <select name="currencyCode" id="currencyCode" lay-verify="required" lay-verType="tips"  lay-filter="currencyCode"></select>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">汇率对应的日期，用于后续成本换算</label>
+                <label class="layui-form-label">金额合计</label>
                 <div class="layui-input-block">
-                    <input type="fxRateDate" name="fxRateDate" placeholder="请输入汇率对应的日期，用于后续成本换算"
-                           autocomplete="off" class="layui-input disabled">
+                    <input type="amountGoodsTotal" name="amountGoodsTotal" placeholder="请输入商品金额合计（不含运费）" readonly
+                           autocomplete="off" class="layui-input disabled layui-disabled">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">商品金额合计（不含运费）</label>
-                <div class="layui-input-block">
-                    <input type="amountGoodsTotal" name="amountGoodsTotal" placeholder="请输入商品金额合计（不含运费）"
-                           autocomplete="off" class="layui-input disabled">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">整单运费</label>
+                <label class="layui-form-label">运费</label>
                 <div class="layui-input-block">
                     <input type="amountFreightTotal" name="amountFreightTotal" placeholder="请输入整单运费"
                            autocomplete="off" class="layui-input disabled">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">整单其他费用（包材、清关费等）</label>
+                <label class="layui-form-label">分摊方式</label>
                 <div class="layui-input-block">
-                    <input type="amountOtherTotal" name="amountOtherTotal"
-                           placeholder="请输入整单其他费用（包材、清关费等）" autocomplete="off"
-                           class="layui-input disabled">
+                    <select name="allocationMethod" lay-verify="required" lay-verType="tips"  id="am" lay-filter="am"></select>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">分摊方式：QTY/WEIGHT</label>
+                <label class="layui-form-label">物流方式</label>
                 <div class="layui-input-block">
-                    <input type="allocationMethod" name="allocationMethod" placeholder="请输入分摊方式：QTY/WEIGHT"
-                           autocomplete="off" class="layui-input disabled">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">物流方式：AIR 空运 / SEA 海运</label>
-                <div class="layui-input-block">
-                    <input type="logisticsMethod" name="logisticsMethod"
-                           placeholder="请输入物流方式：AIR 空运 / SEA 海运" autocomplete="off"
-                           class="layui-input disabled">
+                    <select name="logisticsMethod" lay-verify="required" lay-verType="tips"  id="lm" lay-filter="lm"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -85,23 +64,22 @@
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">中国时间</label>
+                <label class="layui-form-label">发货时间</label>
                 <div class="layui-input-block">
-                    <input type="shipOutTime" name="shipOutTime" placeholder="请输入中国出库/发货时间"
+                    <input type="shipOutTime" name="shipOutTime" id="shipOutTime" placeholder="请输入中国出库/发货时间"
                            autocomplete="off" class="layui-input disabled">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label">菲律宾仓库入库时间</label>
+                <label class="layui-form-label">入库时间</label>
                 <div class="layui-input-block">
-                    <input type="warehouseInTime" name="warehouseInTime" placeholder="请输入菲律宾仓库入库时间"
-                           autocomplete="off" class="layui-input disabled">
+                    <input type="warehouseInTime" name="warehouseInTime" id="warehouseInTime" placeholder="请输入菲律宾仓库入库时间"autocomplete="off" class="layui-input disabled">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">采购状态</label>
                 <div class="layui-input-block">
-                    <select name="purchaseStatus" id="addPurchaseStatus" lay-filter="addPurchaseStatus"></select>
+                    <select name="status" lay-verify="required" lay-verType="tips"  id="addPurchaseStatus" lay-filter="addPurchaseStatus"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -125,14 +103,41 @@
     <div id="searchParam" sa:hasPermission="purchaseOrder:list">
         <form class="layui-form ">
             <div class="layui-form-item">
-                <div class="layui-input-inline">
-                    <input type="text" name="key" class="layui-input" autocomplete="off" placeholder="请输入">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">采购单号</label>
+                    <div class="layui-input-inline">
+                        <input type="purchaseOrderNo" name="purchaseOrderNo" placeholder="请输入采购单号" autocomplete="off"
+                               class="layui-input disabled">
+                    </div>
                 </div>
-                <div class="layui-input-inline ">
-                    <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i
-                            class="layui-icon"></i> 搜 索
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">物流单号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" placeholder="请输入物流单号" class="layui-input disabled" name="logisticsTrackingNo" id="logisticsTrackingNo" lay-filter="logisticsTrackingNo" />
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">入库日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="warehouseInTimeBegin" name="warehouseInTimeBegin">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="warehouseInTimeEnd" name="warehouseInTimeEnd">
+                    </div>
+                </div>
+
+
+
+                <!-- 搜索按钮 -->
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn">
+                        <i class="layui-icon layui-icon-search"></i> 搜索
                     </button>
                 </div>
+
             </div>
         </form>
     </div>
@@ -146,7 +151,7 @@
     </div>
 </script>
 <script type="text/html" id="tool">
-    <a class="layui-btn layui-btn-xs" lay-event="look">查看</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" sa:hasPermission="purchaseOrderItem:list" lay-event="detail">明细</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="purchaseOrder:update">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="purchaseOrder:delete">删除</a>
 </script>
@@ -158,11 +163,29 @@
         var table = layui.table;
         var form = layui.form;
         var layer = layui.layer;
-        var dictTypes = ['purchaseStatus', 'enable', 'productStatus', 'active'];
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#warehouseInTime'
+        });
+        laydate.render({
+            elem: '#shipOutTime'
+        });
+        laydate.render({
+            elem: '#warehouseInTimeBegin'
+        });
+        laydate.render({
+            elem: '#warehouseInTimeEnd'
+        });
+        var dictTypes = ['allocationMethod', 'logisticsMethod', 'purchaseStatus', 'supplier','currency'];
 
         // 一次性加载
         loadDicts(dictTypes, function () {
             renderDictSelect('purchaseStatus', $('#addPurchaseStatus'), '请选择', 'addForm');
+            renderDictSelect('logisticsMethod', $('#lm'), '请选择', 'addForm');
+            renderDictSelect('allocationMethod', $('#am'), '请选择', 'addForm');
+            renderDictSelect('currency', $('#currencyCode'), '请选择', 'addForm');
+            renderDictSelect('supplier', $('#supplier'), '请选择', 'addForm');
         })
 
         //加载table
@@ -183,29 +206,39 @@
             , cols: [
                 [
                     {type: 'checkbox', fixed: 'left'},
-                    {field: 'id', title: '主键 ID', sort: true},
                     {field: 'purchaseOrderNo', title: '采购单号', sort: true},
-                    {field: 'supplierId', title: '供应商 ID', sort: true},
-                    {field: 'currencyCode', title: '采购币种，如 CNY/USD', sort: true},
-                    {field: 'fxRateDate', title: '汇率对应的日期，用于后续成本换算', sort: true},
-                    {field: 'amountGoodsTotal', title: '商品金额合计（不含运费）', sort: true},
-                    {field: 'amountFreightTotal', title: '整单运费', sort: true},
-                    {field: 'amountOtherTotal', title: '整单其他费用（包材、清关费等）', sort: true},
-                    {field: 'allocationMethod', title: '分摊方式：QTY/WEIGHT', sort: true},
-                    {field: 'logisticsMethod', title: '物流方式：AIR 空运 / SEA 海运', sort: true},
-                    {field: 'logisticsTrackingNo', title: '物流单号（海运/空运）', sort: true},
-                    {field: 'shipOutTime', title: '中国出库/发货时间', sort: true},
-                    {field: 'warehouseInTime', title: '菲律宾仓库入库时间', sort: true},
-                    {field: 'status', title: '采购状态：0草稿 1已提交 2运输中 3部分入库 4已入库', sort: true},
-                    {field: 'remark', title: '备注', sort: true},
-                    {field: 'updatedBy', title: '更新人', sort: true},
-                    {field: 'updatedTime', title: '更新时间', sort: true},
-                    {width: 180, toolbar: "#tool", title: '操作'}
+                    {field: 'supplierId', title: '供应商', sort: true,templet:function(p){return getDictLabel('supplier',p.supplierId);}},
+                    {field: 'amountGoodsTotal', title: '金额', sort: true},
+                    {field: 'amountFreightTotal', title: '运费', sort: true},
+                    {field: 'currencyCode', title: '币种', sort: true},
+                    {field: 'allocationMethod', title: '分摊方式',hide:true, sort: true,templet:function(p){return getDictLabel('allocationMethod',p.allocationMethod);}},
+                    {field: 'logisticsMethod', title: '物流方式',hide:true, sort: true,templet:function(p){return getDictLabel('logisticsMethod',p.logisticsMethod);}},
+                    {field: 'logisticsTrackingNo',width:150, title: '物流单号', sort: true},
+                    {field: 'shipOutTime',width:110,  title: '发货时间', sort: true},
+                    {field: 'warehouseInTime',width:110, title: '入库时间', sort: true},
+                    {field: 'status', title: '状态', sort: true,templet:function(p){return getDictLabel('purchaseStatus',p.status);}},
+                    {field: 'remark', title: '备注', sort: true,hide:true},
+                    {field: 'updatedBy', title: '更新人', sort: true,hide:true},
+                    {field: 'updatedTime',width:170, title: '更新时间', sort: true},
+                    { title:'操作', width:180, align:'center', templet:function(d){
+                        var btn = [];
+                        btn.push('<a class="layui-btn layui-btn-primary layui-btn-xs" sa:hasPermission="purchaseOrderItem:list" lay-event="detail">明细</a>');
+                        if(d.status == 0 || d.status == 1){
+                            btn.push('<a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="purchaseOrder:update">编辑</a>');
+                            btn.push('<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="purchaseOrder:delete">删除</a>');
+                        }
+                        if(d.status ==2 || d.status ==3){
+                            btn.push('<a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="purchaseOrder:update">编辑</a>');
+                        }
+                        return btn.join('');
+                        }
+                    }
                 ]
             ]
             , toolbar: '#toolbar'
         });
 
+        autoMarkRequired("#addForm");
 
         //表头工具
         table.on('toolbar(showTable)', function (obj) {
@@ -273,8 +306,21 @@
                     $(".title").html("编辑");
                     toUnDisabled();
                     break;
+                case 'detail':
+                    openDetailLayer(data.id,data.purchaseOrderNo,data.status);
+                    break;
             }
         });
+
+        function openDetailLayer(purchaseOrderId,pon,status) {
+            layer.open({
+                type: 2, // iframe
+                title: '采购明细 - ' + pon,
+                area: ['90%', '90%'],
+                maxmin: true,
+                content: ctx + 'purchaseOrderItem/detail?orderId=' + purchaseOrderId+'&status='+status
+            });
+        }
 
         //删除
         var tipDialog = function (ids) {

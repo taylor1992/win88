@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.project.mapper.PurchaseOrderItemMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.company.project.entity.PurchaseOrderItemEntity" id="purchaseOrderItemMap">
+        <result property="id" column="id"/>
+        <result property="purchaseOrderId" column="purchase_order_id"/>
+        <result property="skuId" column="sku_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="amountGoodsSubtotal" column="amount_goods_subtotal"/>
+        <result property="weightKgPerUnit" column="weight_kg_per_unit"/>
+        <result property="weightKgTotal" column="weight_kg_total"/>
+        <result property="amountFreightAlloc" column="amount_freight_alloc"/>
+        <result property="amountOtherAlloc" column="amount_other_alloc"/>
+        <result property="amountCostTotal" column="amount_cost_total"/>
+        <result property="remark" column="remark"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+    </resultMap>
+
+
+</mapper>
