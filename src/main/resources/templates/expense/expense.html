@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Management</title>
+    <!-- 公共 layout（包含 layui.js / css、CoreUtil、ctx 等） -->
+    <div th:replace="~{layout}"></div>
+</head>
+<body>
+
+<!-- ============== 表单区域：新增 / 编辑 / 查看 ============== -->
+<div class="panel panel-default operation" hidden>
+    <div class="panel-heading title"></div>
+    <div class="layui-card-body">
+        <form class="layui-form" action="" lay-filter="info">
+            <input name="id" hidden/>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Expense Date</label>
+                <div class="layui-input-block">
+                    <input type="text" id="expense_date_form" name="expenseDate"
+                           placeholder="Select expense date"
+                           autocomplete="off" class="layui-input disabled">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Category</label>
+                <div class="layui-input-block">
+                    <select name="category" id="category_form" class="disabled"></select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Amount</label>
+                <div class="layui-input-block">
+                    <input type="number" step="0.01" name="amount"
+                           placeholder="Enter amount"
+                           autocomplete="off" class="layui-input disabled">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Currency</label>
+                <div class="layui-input-block">
+                    <input type="text" name="currency"
+                           placeholder="Currency, e.g. PHP"
+                           autocomplete="off" class="layui-input disabled">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Biz Tag</label>
+                <div class="layui-input-block">
+                    <input type="text" name="bizTag"
+                           placeholder="Office rent, warehouse, store name..."
+                           autocomplete="off" class="layui-input disabled">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Order No</label>
+                <div class="layui-input-block">
+                    <input type="text" name="orderNo"
+                           placeholder="Related order/PO/contract no. (optional)"
+                           autocomplete="off" class="layui-input disabled">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Status</label>
+                <div class="layui-input-block">
+                    <select name="status" id="status_form" class="disabled"></select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Remark</label>
+                <div class="layui-input-block">
+          <textarea name="remark"
+                    placeholder="Optional remark"
+                    class="layui-textarea disabled"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit lay-filter="submit">Save</button>
+                    <button class="layui-btn layui-btn-primary" id="btn_cancel">Back</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- ============== 列表区域 ============== -->
+<div class="table_div">
+    <!-- 搜索条件 -->
+    <div id="searchParam" sa:hasPermission="expense:list">
+        <form class="layui-form" lay-filter="searchForm">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px;">Expense Date</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="expenseDateBegin" name="expenseDateBegin"
+                               placeholder="Start date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline">
+                        <input type="text" id="expenseDateEnd" name="expenseDateEnd"
+                               placeholder="End date" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">Category</label>
+                    <div class="layui-input-inline">
+                        <select name="category" id="sCategory" lay-filter="sCategory"></select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">Status</label>
+                    <div class="layui-input-inline">
+                        <select name="status" id="sStatus"></select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"
+                            lay-submit lay-filter="data-search-btn">
+                        <i class="layui-icon">&#xe615;</i> Search
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- 表格 -->
+    <table class="layui-table" id="showTable" lay-filter="showTable"></table>
+</div>
+
+<!-- 工具栏 -->
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container oper">
+        <button class="layui-btn layui-btn-sm" lay-event="add"
+                sa:hasPermission="expense:add">Add
+        </button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDeleted"
+                sa:hasPermission="expense:delete">Delete
+        </button>
+    </div>
+</script>
+
+<!-- 行内操作列 -->
+<script type="text/html" id="tool">
+    <a class="layui-btn layui-btn-xs" lay-event="look">View</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit"
+       sa:hasPermission="expense:update">Edit</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
+       sa:hasPermission="expense:delete">Delete</a>
+</script>
+
+</body>
+</html>
+<script>
+    // 这里控制语言：'en' 或 'zh'
+    window.APP_LANG = 'en';
+</script>
+<script th:src="@{/static/js/layui.i18n.js(v=${T(System).currentTimeMillis()})}"></script>
+<script>
+    layui.use(['table', 'form', 'laydate', 'layer'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        var dictTypes = ['ExpenseStatus','ExpenseCategory'];
+
+        loadDicts(dictTypes, function () {
+            renderDictSelect('ExpenseStatus', $('#sStatus'), 'Select All');
+            renderDictSelect('ExpenseStatus', $('#status_form'), 'Select All');
+            renderDictSelect('ExpenseCategory', $('#sCategory'), 'Select All');
+            renderDictSelect('ExpenseCategory', $('#category_form'), 'Select All');
+        })
+
+        // ======== 日期控件：查询条件 ========
+        LaydateEn.render({
+            elem: '#expenseDateBegin',
+            format: 'yyyy-MM-dd',
+            type: 'date'
+        });
+        LaydateEn.render({
+            elem: '#expenseDateEnd',
+            format: 'yyyy-MM-dd',
+            type: 'date'
+        });
+
+        // ======== 日期控件：表单里的 expense_date ========
+        LaydateEn.render({
+            elem: '#expense_date_form',
+            format: 'yyyy-MM-dd',
+            type: 'date'
+        });
+        // ======== 表格渲染 ========
+        var tableIns1 = table.render({
+            elem: '#showTable',
+            contentType: 'application/json',
+            page: true,
+            url: ctx + 'expense/listByPage',
+            method: 'POST',
+            parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.msg,
+                    "count": res.data ? res.data.total : 0,
+                    "data": res.data ? res.data.records : []
+                };
+            },
+            cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    {field: 'expenseDate', title: 'Expense Date', sort: true, width: 180},
+                    {
+                        field: 'category',
+                        title: 'Category',
+                        sort: true,
+                        templet: function (d) {
+                            return getDictLabel('ExpenseCategory',d.category);
+                        }
+                    },
+                    {field: 'amount', title: 'Amount', sort: true},
+                    {field: 'currency', title: 'Currency'},
+                    {field: 'orderNo', title: 'Order No'},
+                    {
+                        field: 'status',
+                        title: 'Status',
+                        templet: function (d) {
+                            return getDictLabel('ExpenseStatus',d.status);
+                        }
+                    },
+                    {field: 'remark', title: 'Remark'},
+                    {field: 'updatedBy', title: 'Updated By', sort: true},
+                    {field: 'updatedTime', title: 'Updated Time', sort: true,width: 170},
+                    {width: 180, toolbar: "#tool", title: 'Actions', fixed: 'right'}
+                ]
+            ],
+            toolbar: '#toolbar'
+        });
+
+        // ======== 表头工具栏事件 ========
+        table.on('toolbar(showTable)', function (obj) {
+            switch (obj.event) {
+                case 'batchDeleted':
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var data = checkStatus.data;
+                    if (data.length === 0) {
+                        layer.msg("Please select rows to delete.");
+                    } else {
+                        var ids = [];
+                        $(data).each(function (index, item) {
+                            ids.push(item.id);
+                        });
+                        tipDialog(ids);
+                    }
+                    break;
+                case 'add':
+                    toUnDisabled();
+                    $(".table_div").hide();
+                    $(".operation").show();
+                    $(".title").html("Add Expense");
+                    setTimeout(function () {
+                        form.val('info', {
+                            "id": "",
+                            "expenseDate": "",
+                            "category": "",
+                            "amount": "",
+                            "currency": "PHP",
+                            "bizTag": "",
+                            "orderNo": "",
+                            "remark": "",
+                            "status": 1,
+                            "createdTime": "",
+                            "updatedTime": ""
+                        });
+                    }, 200);
+                    break;
+            }
+        });
+
+        // ======== 行内工具事件 ========
+        table.on('tool(showTable)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                case 'del':
+                    var ids = [];
+                    ids.push(data.id);
+                    tipDialog(ids);
+                    break;
+                case 'look':
+                    backshow(data);
+                    toDisabled();
+                    break;
+                case 'edit':
+                    backshow(data);
+                    $(".title").html("Edit Expense");
+                    toUnDisabled();
+                    break;
+            }
+        });
+
+        // ======== 删除确认 ========
+        var tipDialog = function (ids) {
+            layer.open({
+                content: "Are you sure to delete selected record(s)?",
+                yes: function (index, layero) {
+                    layer.close(index);
+                    CoreUtil.sendDelete(ctx + "expense/delete", ids, function (res) {
+                        layer.msg(res.msg, {time: 1000}, function () {
+                            tableIns1.reload();
+                        });
+                    });
+                }
+            });
+        };
+
+        // ======== 返回按钮 ========
+        $("#btn_cancel").click(function () {
+            $(".table_div").show();
+            $(".operation").hide();
+            tableIns1.reload();
+            return false;
+        });
+
+        // ======== 保存监听 ========
+        form.on('submit(submit)', function (data) {
+            // 简单必填校验
+            if (!data.field.expenseDate) {
+                layer.msg('Please select expense date.');
+                return false;
+            }
+            if (!data.field.category) {
+                layer.msg('Please select category.');
+                return false;
+            }
+            if (!data.field.amount || isNaN(parseFloat(data.field.amount))) {
+                layer.msg('Please enter a valid amount.');
+                return false;
+            }
+
+            if (!data.field.id) {
+                CoreUtil.sendPost(ctx + "expense/add", data.field, function (res) {
+                    layer.msg(res.msg || 'Saved', {time: 800}, function () {
+                        $(".table_div").show();
+                        $(".operation").hide();
+                        tableIns1.reload();
+                    });
+                });
+            } else {
+                CoreUtil.sendPut(ctx + "expense/update", data.field, function (res) {
+                    layer.msg(res.msg || 'Updated', {time: 800}, function () {
+                        $(".table_div").show();
+                        $(".operation").hide();
+                        tableIns1.reload();
+                    });
+                });
+            }
+
+            return false;
+        });
+
+        // ======== 搜索 ========
+        form.on('submit(data-search-btn)', function (data) {
+            var begin = data.field.expenseDateBegin;
+            var end = data.field.expenseDateEnd;
+            if (begin && end && begin > end) {
+                layer.msg('End date cannot be earlier than start date.');
+                return false;
+            }
+
+            tableIns1.reload({
+                page: {curr: 1},
+                where: data.field
+            });
+            return false;
+        });
+
+        // ======== 回显到表单 ========
+        var backshow = function (data) {
+            $(".table_div").hide();
+            $(".operation").show();
+            $(".title").html("View Expense");
+            setTimeout(function () {
+                form.val('info', {
+                    "id": data.id,
+                    "expenseDate": data.expenseDate,
+                    "category": data.category,
+                    "amount": data.amount,
+                    "currency": data.currency,
+                    "bizTag": data.bizTag,
+                    "orderNo": data.orderNo,
+                    "remark": data.remark,
+                    "status": data.status,
+                    "createdTime": data.createdTime,
+                    "updatedTime": data.updatedTime
+                });
+            }, 200);
+        };
+
+        // ======== 禁用输入（查看模式） ========
+        var toDisabled = function () {
+            $(".oper").hide();
+            $(".disabled").each(function (index, elem) {
+                $(elem).attr("disabled", "disabled");
+            });
+            form.render('select');
+        };
+
+        // ======== 放开输入（新增 / 编辑） ========
+        var toUnDisabled = function () {
+            $(".oper").show();
+            $(".disabled").each(function (index, elem) {
+                $(elem).removeAttr("disabled");
+            });
+            form.render('select');
+        };
+
+    });
+</script>

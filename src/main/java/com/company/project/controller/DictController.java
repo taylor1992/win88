@@ -99,6 +99,16 @@ public class DictController {
                     .map(e -> new OptionVO(String.valueOf(e.getCode()), e.getDescEn()))
                     .collect(Collectors.toList());
         }
+        if ("ExpenseStatus".equals(type)) {
+            return Arrays.stream(DictionaryEnums.ExpenseStatus.values())
+                    .map(e -> new OptionVO(String.valueOf(e.getCode()), e.getLabel()))
+                    .collect(Collectors.toList());
+        }
+        if ("ExpenseCategory".equals(type)) {
+            return Arrays.stream(DictionaryEnums.ExpenseCategory.values())
+                    .map(e -> new OptionVO(String.valueOf(e.getCode()), e.getLabel()))
+                    .collect(Collectors.toList());
+        }
         if ("supplier".equals(type)) {
             List<SupplierEntity> list = supplierService.list();
             for (SupplierEntity se : list) {

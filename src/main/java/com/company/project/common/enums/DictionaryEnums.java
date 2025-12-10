@@ -180,4 +180,62 @@ public class DictionaryEnums {
         public String getCode() { return code; }
         public String getLabel() { return label; }
     }
+
+    public enum ExpenseCategory {
+
+        SALARY(1, "Salary"),               // 工资支出
+        RENT(2, "Rent"),                   // 房租支出
+        UTILITIES(3, "Utilities"),         // 水电网
+        DAILY_EXPENSE(4, "Daily Expense"), // 日常开销（办公用品、杂项）
+        FREIGHT(5, "Freight / Delivery"),  // 物流费用（Lalamove、J&T 等）
+        PLATFORM_FEE(6, "Platform Fee"),   // 平台费用（佣金、广告）
+        PROCUREMENT_FEE(7, "Procurement Fee"), // 采购杂费（税费、服务费等）
+        ASSET(8, "Asset Purchase"),        // 固定资产（电脑、办公设备）
+        TAX(9, "Tax"),                     // 各类税费
+        OTHER(99, "Other");                // 其他类支出
+
+        private final int code;
+        private final String label;
+
+        ExpenseCategory(int code, String label) {
+            this.code = code;
+            this.label = label;
+        }
+
+        public int getCode() { return code; }
+        public String getLabel() { return label; }
+
+        public static ExpenseCategory fromCode(int code) {
+            for (ExpenseCategory c : values()) {
+                if (c.code == code) return c;
+            }
+            return OTHER;
+        }
+    }
+
+    public enum ExpenseStatus {
+
+        DRAFT(0, "Draft"),               // 工资支出
+        CONFIRMED(1, "Confirmed"),                   // 房租支出
+        VOIDED(2, "Voided");                // 其他类支出
+
+        private final int code;
+        private final String label;
+
+        ExpenseStatus(int code, String label) {
+            this.code = code;
+            this.label = label;
+        }
+
+        public int getCode() { return code; }
+        public String getLabel() { return label; }
+
+        public static ExpenseStatus fromCode(int code) {
+            for (ExpenseStatus c : values()) {
+                if (c.code == code) return c;
+            }
+            return null;
+        }
+    }
+
 }

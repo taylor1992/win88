@@ -27,6 +27,15 @@
         }
     };
 
+    layui.config({
+        table: {
+            text: {
+                none: "No data"
+            }
+        }
+    });
+
+
     layui.use(['laypage', 'jquery'], function () {
         var laypage = layui.laypage;
         var $ = layui.$;
@@ -107,5 +116,24 @@
             // 3. 调回原始 render
             return _render.call(laypage, opts);
         };
+    });
+
+    layui.use(['table'], function () {
+        var table = layui.table;
+
+        // 只在英文环境覆盖
+        if (LANG === 'en') {
+            table.set({
+                text: {
+                    none: 'No data'
+                }
+            });
+        } else {
+            table.set({
+                text: {
+                    none: '无数据'
+                }
+            });
+        }
     });
 })(window);
