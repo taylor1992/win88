@@ -87,7 +87,10 @@ public class ShopSkuController {
             List<String> shopIds = records.stream().map(ShopSkuEntity::getShopId).collect(Collectors.toList());
             Map<String, ShopEntity> shopMap = shopService.listByIds(shopIds).stream().collect(Collectors.toMap(ShopEntity::getShopId, Function.identity()));
             records.stream().forEach(shop -> {
-                shop.setPlatformCode(Win88Util.getPlatformCode(shopMap.get(shop.getShopId()).getType()));
+                ShopEntity sp = shopMap.get(shop.getShopId());
+                if(Objects.nonNull(sp)) {
+                    shop.setPlatformCode(Win88Util.getPlatformCode(sp.getType()));
+                }
             });
         }
         return DataResult.success(iPage);

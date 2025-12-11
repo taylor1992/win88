@@ -6,7 +6,7 @@ import lombok.Getter;
 public class DictionaryEnums {
 
     /** ================= 店铺类型 ================= */
-    public enum ShopTypeEnum {
+    public enum PlatformCode {
         TIKTOK(1, "Tiktok"),
         SHOPEE(2, "Shopee"),
         LAZADA(3, "Lazada"),
@@ -16,7 +16,7 @@ public class DictionaryEnums {
         private final int code;
         private final String label;
 
-        ShopTypeEnum(int code, String label) {
+        PlatformCode(int code, String label) {
             this.code = code;
             this.label = label;
         }
@@ -237,5 +237,40 @@ public class DictionaryEnums {
             return null;
         }
     }
+
+
+    public enum OrderStatusEnum {
+
+        TO_SHIP("TO_SHIP", "To Ship"),
+        SHIPPED("SHIPPED", "Shipped"),
+        COMPLETED("COMPLETED", "Completed"),
+        CANCELED("CANCELED", "Canceled"),
+        PENDING("PENDING", "Pending"),
+        FAILED_DELIVERY("FAILED_DELIVERY", "Failed Delivery");
+
+        private final String code;
+        private final String label;
+
+        OrderStatusEnum(String code, String label) {
+            this.code = code;
+            this.label = label;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public static String labelOf(String code) {
+            for (OrderStatusEnum e : values()) {
+                if (e.code.equals(code)) return e.label;
+            }
+            return code;
+        }
+    }
+
 
 }

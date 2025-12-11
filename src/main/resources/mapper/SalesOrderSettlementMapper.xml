@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.project.mapper.SalesOrderSettlementMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.company.project.entity.SalesOrderSettlementEntity" id="salesOrderSettlementMap">
+        <result property="id" column="id"/>
+        <result property="platformCode" column="platform_code"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="platformOrderNo" column="platform_order_no"/>
+        <result property="settlementDate" column="settlement_date"/>
+        <result property="currencyCode" column="currency_code"/>
+        <result property="buyerPayGoods" column="buyer_pay_goods"/>
+        <result property="buyerPayShipping" column="buyer_pay_shipping"/>
+        <result property="buyerPayTax" column="buyer_pay_tax"/>
+        <result property="platformSubsidy" column="platform_subsidy"/>
+        <result property="sellerVoucherUsed" column="seller_voucher_used"/>
+        <result property="platformVoucherUsed" column="platform_voucher_used"/>
+        <result property="commissionFee" column="commission_fee"/>
+        <result property="paymentFee" column="payment_fee"/>
+        <result property="shippingFeeSeller" column="shipping_fee_seller"/>
+        <result property="affiliateCommission" column="affiliate_commission"/>
+        <result property="otherFee" column="other_fee"/>
+        <result property="netPayoutAmount" column="net_payout_amount"/>
+        <result property="sourceFileName" column="source_file_name"/>
+        <result property="sourceRowNo" column="source_row_no"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+    </resultMap>
+
+
+</mapper>

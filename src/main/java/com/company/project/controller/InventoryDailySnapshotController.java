@@ -62,11 +62,14 @@ public class InventoryDailySnapshotController {
             query.eq(InventoryDailySnapshotEntity::getSnapshotDate, DateUtil.format(new Date(), DatePattern.NORM_DATE_PATTERN));
             InventoryDailySnapshotEntity one = inventoryDailySnapshotService.getOne(query);
             if(Objects.nonNull(one)){
+                Long id = one.getId();
                 BeanUtils.copyProperties(record,one);
+                one.setId(id);
                 one.setCreatedTime(new Date());
                 one.setUpdatedTime(new Date());
                 inventoryDailySnapshotService.updateById(one);
             }else {
+                snapshot.setId(System.currentTimeMillis());
                 snapshot.setCreatedTime(new Date());
                 snapshot.setUpdatedTime(new Date());
                 inventoryDailySnapshotService.save(snapshot);
@@ -99,7 +102,7 @@ public class InventoryDailySnapshotController {
         if(Objects.nonNull(inventoryDailySnapshot.getSkuId())){
             queryWrapper.eq(InventoryDailySnapshotEntity::getSkuId,inventoryDailySnapshot.getSkuId());
         }
-        queryWrapper.orderByDesc(InventoryDailySnapshotEntity::getId);
+        queryWrapper.orderByDesc(InventoryDailySnapshotEntity::getCreatedTime);
         IPage<InventoryDailySnapshotEntity> data = inventoryDailySnapshotService.page(inventoryDailySnapshot.getQueryPage(), queryWrapper);
         return DataResult.success(data);
     }

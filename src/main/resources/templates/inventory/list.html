@@ -19,14 +19,14 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">Warehouse</label>
                     <div class="layui-input-inline">
-                        <select name="warehouseId" id="warehouseId"></select>
+                        <select name="warehouseId" class="dict-select disabled" data-dict-type="warehouse" data-placeholder="All Warehouses"></select>
                     </div>
                 </div>
 
                 <div class="layui-inline">
                     <label class="layui-form-label">Internal SKU</label>
                     <div class="layui-input-inline">
-                        <select name="skuId" id="internalSku" lay-filter="internalSku"></select>
+                        <select name="skuId" class="dict-select disabled" data-dict-type="internalSku" data-placeholder="All SKU"></select>
                     </div>
                 </div>
 
@@ -73,47 +73,49 @@
         var layer = layui.layer;
         var $ = layui.$;
 
-        // Render warehouse select (dictionary)
-        // 字典类型 'warehouse' 自己按后端实际来
-        if (typeof renderDictSelect === 'function') {
-            renderDictSelect('warehouse', $('#warehouseId'), 'All Warehouses');
-            renderDictSelect('internalSku', $('#internalSku'), 'All SKU');
-        }
+        var tableIns1;
+
+        initDictSelects(function () {
+            tableIns1 = renderTable();
+        });
 
         // Table render
-        var tableIns1 = table.render({
-            elem: '#showTable',
-            contentType: 'application/json',
-            page: true,
-            url: ctx + 'inventory/listByPage',
-            method: 'POST',
-            parseData: function (res) {
-                return {
-                    code: res.code,
-                    msg: res.msg,
-                    count: CoreUtil.isEmpty(res.data) ? 0 : res.data.total,
-                    data: CoreUtil.isEmpty(res.data) ? null : res.data.records
-                }
-            },
-            cols: [
-                [
-                    {type: 'checkbox', fixed: 'left'},
-                    {field: 'warehouseId', title: 'Warehouse', sort: true,templet:function (param) {
-                            return getDictLabel('warehouse',param.warehouseId);
-                        }},
-                    {field: 'skuId', title: 'Internal SKU',width:350, sort: true,templet:function (param) {
-                            return getDictLabel('internalSku',param.skuId);
-                        }},
-                    {field: 'qtyOnHand', title: 'On-hand Qty', sort: true},
-                    {field: 'qtyAvailable', title: 'Available Qty', sort: true},
-                    {field: 'updatedBy', title: 'Updated By', sort: true},
-                    {field: 'updatedTime',width:180, title: 'Updated Time', sort: true},
-                    {width: 270, toolbar: '#tool', title: 'Actions'}
-                ]
-            ],
-            toolbar: '#toolbar',
-            where: form.val('searchForm')
-        });
+        function renderTable(){
+            return table.render({
+                elem: '#showTable',
+                contentType: 'application/json',
+                page: true,
+                url: ctx + 'inventory/listByPage',
+                method: 'POST',
+                parseData: function (res) {
+                    return {
+                        code: res.code,
+                        msg: res.msg,
+                        count: CoreUtil.isEmpty(res.data) ? 0 : res.data.total,
+                        data: CoreUtil.isEmpty(res.data) ? null : res.data.records
+                    }
+                },
+                cols: [
+                    [
+                        {type: 'checkbox', fixed: 'left'},
+                        {field: 'warehouseId', title: 'Warehouse', sort: true,templet:function (param) {
+                                return getDictLabel('warehouse',param.warehouseId);
+                            }},
+                        {field: 'skuId', title: 'Internal SKU',width:350, sort: true,templet:function (param) {
+                                return getDictLabel('internalSku',param.skuId);
+                            }},
+                        {field: 'qtyOnHand', title: 'On-hand Qty', sort: true},
+                        {field: 'qtyAvailable', title: 'Available Qty', sort: true},
+                        {field: 'updatedBy', title: 'Updated By', sort: true},
+                        {field: 'updatedTime',width:180, title: 'Updated Time', sort: true},
+                        {width: 270, toolbar: '#tool', title: 'Actions'}
+                    ]
+                ],
+                toolbar: '#toolbar',
+                where: form.val('searchForm')
+            });
+        }
+
 
         // Top toolbar (if later you add buttons like export, handle here)
         table.on('toolbar(showTable)', function (obj) {

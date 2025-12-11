@@ -1,0 +1,152 @@
+<!-- head & layout 同上，title: Order Profit Snapshot -->
+
+<div class="table_div">
+    <div id="searchParam" sa:hasPermission="salesProfit:list">
+        <form class="layui-form" lay-filter="searchForm">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px;">Snapshot Date</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="snapshotDateBegin" name="snapshotDateBegin"
+                               placeholder="Start date" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline">
+                        <input type="text" id="snapshotDateEnd" name="snapshotDateEnd"
+                               placeholder="End date" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">Platform</label>
+                    <div class="layui-input-inline">
+                        <select name="platformCode" id="sPlatform"></select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">Shop</label>
+                    <div class="layui-input-inline">
+                        <select name="shopId" id="sShop"></select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary"
+                            lay-submit lay-filter="data-search-btn">
+                        <i class="layui-icon">&#xe615;</i> Search
+                    </button>
+                </div>
+
+                <div class="layui-inline">
+                    <button type="button" class="layui-btn layui-btn-normal" id="btn_rebuild"
+                            sa:hasPermission="salesProfit:rebuild">
+                        Rebuild Snapshot
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <table class="layui-table" id="showTable" lay-filter="showTable"></table>
+</div>
+
+<script>
+    layui.use(['table','form','laydate','layer'], function(){
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var $ = layui.$;
+
+        var dictTypes = ['OrderPlatform','Shop'];
+        loadDicts(dictTypes, function(){
+            renderDictSelect('OrderPlatform', $('#sPlatform'), 'All platforms');
+            renderDictSelect('Shop', $('#sShop'), 'All shops');
+        });
+
+        LaydateEn.render({elem:'#snapshotDateBegin', format:'yyyy-MM-dd', type:'date'});
+        LaydateEn.render({elem:'#snapshotDateEnd', format:'yyyy-MM-dd', type:'date'});
+
+        var tableIns1 = table.render({
+            elem:'#showTable',
+            contentType:'application/json',
+            page:true,
+            url: ctx + 'salesProfit/listByPage',
+            method:'POST',
+            parseData:function(res){
+                return {
+                    code: res.code,
+                    msg: res.msg,
+                    count: res.data ? res.data.total : 0,
+                    data: res.data ? res.data.records : []
+                };
+            },
+            cols:[[
+                {type:'numbers', title:'#'},
+                {field:'snapshotDate', title:'Snapshot Date', sort:true},
+                {field:'platformCode', title:'Platform', templet:function(d){
+                        return getDictLabel('OrderPlatform', d.platformCode);
+                    }},
+                {field:'shopId', title:'Shop', templet:function(d){
+                        return getDictLabel('Shop', d.shopId);
+                    }},
+                {field:'platformOrderNo', title:'Order No'},
+                {field:'orderCurrency', title:'Currency'},
+                {field:'revenue_total_order', title:'Revenue (Order)'},
+                {field:'cost_total_order', title:'Cost (Order)'},
+                {field:'fee_total_order', title:'Fee (Order)'},
+                {field:'net_profit_order', title:'Net Profit (Order)'},
+                {field:'net_profit_base', title:'Net Profit (Base)'}
+            ]]
+        });
+
+        form.on('submit(data-search-btn)', function (data) {
+            var b = data.field.snapshotDateBegin;
+            var e = data.field.snapshotDateEnd;
+            if (b && e && b > e){
+                layer.msg('End date cannot be earlier than start date.');
+                return false;
+            }
+            tableIns1.reload({
+                page:{curr:1},
+                where:data.field
+            });
+            return false;
+        });
+
+        $('#btn_rebuild').click(function(){
+            var shopId = $('#sShop').val();
+            var b = $('#snapshotDateBegin').val();
+            var e = $('#snapshotDateEnd').val();
+            if (!shopId){
+                layer.msg('Please select a shop.');
+                return;
+            }
+            if (!b || !e){
+                layer.msg('Please select snapshot date range.');
+                return;
+            }
+            if (b > e){
+                layer.msg('End date cannot be earlier than start date.');
+                return;
+            }
+            layer.confirm('Rebuild snapshots for selected shop and date range?', function(idx){
+                layer.close(idx);
+                layer.load(1);
+                CoreUtil.sendPost(ctx + 'salesProfit/rebuild', {
+                    shopId: shopId,
+                    snapshotDateBegin: b,
+                    snapshotDateEnd: e
+                }, function(res){
+                    layer.closeAll('loading');
+                    layer.msg(res.msg || 'Rebuild finished.', {time:1500}, function(){
+                        tableIns1.reload({page:{curr:1}});
+                    });
+                });
+            });
+        });
+    });
+</script>

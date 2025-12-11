@@ -38,7 +38,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label" style="width: 110px;">Internal SKU</label>
                     <div class="layui-input-inline" style="width: 220px;">
-                        <select name="skuId" id="skuId" lay-filter="skuId"></select>
+                        <select name="skuId" class="dict-select disabled" data-dict-type="internalSku" data-placeholder="All SKU"></select>
                     </div>
                 </div>
 
@@ -75,19 +75,19 @@
         var laydate = layui.laydate;
         var $ = layui.$;
 
-        if (typeof renderDictSelect === 'function') {
-            renderDictSelect('warehouse', $('#warehouseId'), 'All Warehouses');
-            renderDictSelect('internalSku', $('#skuId'), 'All SKU');
-        }
+        loadDict('warehouse');
+        initDictSelects();
         LaydateEn.render({
             elem: '#snapshotDateBegin',
             // 也可以覆盖默认 format 等：
-            format: 'yyyy/MM/dd'
+            format: 'yyyy-MM-dd',
+            type:'date'
         });
         LaydateEn.render({
             elem: '#snapshotDateEnd',
             // 也可以覆盖默认 format 等：
-            format: 'yyyy/MM/dd'
+            format: 'yyyy-MM-dd',
+            type:'date'
         });
 
         // Table render

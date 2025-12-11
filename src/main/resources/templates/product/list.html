@@ -39,7 +39,8 @@
                 <label class="layui-form-label">状态</label>
                 <div class="layui-input-block">
                     <div class="layui-input-inline">
-                        <select name="status" id="status0" lay-filter="status0"></select>
+                        <select name="status" class="dict-select disabled" data-dict-type="ProductStatus"
+                                data-placeholder="Select..."></select>
                     </div>
                 </div>
             </div>
@@ -75,7 +76,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">状态</label>
                     <div class="layui-input-inline">
-                        <select name="status" id="status1" lay-filter="status1"></select>
+                        <select name="status" class="dict-select disabled" data-dict-type="ProductStatus" data-placeholder="Select..."></select>
                     </div>
                 </div>
                 <div class="layui-inline ">
@@ -104,208 +105,207 @@
 </html>
 <script>
     layui.use(function () {
-      var table = layui.table;
-      var form = layui.form;
-      var layer = layui.layer;
-        var dictTypes = ['productStatus', 'enable', 'shopType', 'active'];
-
-        // 一次性加载
-        loadDicts(dictTypes, function () {
-            renderDictSelect('productStatus', $('#status0'), '请选择', 'addForm');
-            renderDictSelect('productStatus', $('#status1'), '请选择', 'searchForm1');
-        })
-      //加载table
-      var tableIns1 = table.render({
-        elem: '#showTable'
-        , contentType: 'application/json'
-        , page: true //开启分页
-        , url: ctx + 'product/listByPage' //数据接口
-        , method: 'POST'
-        , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
-          return {
-            "code": res.code, //解析接口状态
-            "msg": res.msg, //解析提示文本
-            "count": CoreUtil.isEmpty(res.data) ? 0 : res.data.total, //解析数据长度
-            "data": CoreUtil.isEmpty(res.data) ? null : res.data.records //解析数据列表
-          }
-        }
-        , cols: [
-          [
-            {type: 'checkbox', fixed: 'left'},
-            {field: 'productName', width:250, title: '产品名称', sort: true},
-            {field: 'productCode',width:250, title: '产品编码', sort: true},
-            {field: 'detailDescription', title: '详细描述', sort: true},
-            {field: 'status', width:100, title: '状态', sort: true,templet:function(item){return getDictLabel('productStatus',item.status);}},
-            {field: 'remark', title: '备注', sort: true},
-            {field: 'updatedBy', title: '更新人', sort: true},
-            {field: 'updatedTime', title: '更新时间', sort: true},
-            {width: 180, toolbar: "#tool", title: '操作'}
-          ]
-        ]
-        , toolbar: '#toolbar'
-      });
-
-
-      //表头工具
-      table.on('toolbar(showTable)', function(obj){
-        switch(obj.event){
-          case 'batchDeleted':
-            var checkStatus = table.checkStatus(obj.config.id);
-            var data = checkStatus.data;
-            if(data.length==0){
-              layer.msg("请选择要批量删除的列");
-            }else {
-              var ids = [];
-              $(data).each(function (index,item) {
-                ids.push(item.id);
-              });
-              tipDialog(ids);
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        initDictSelects();
+        //加载table
+        var tableIns1 = table.render({
+            elem: '#showTable'
+            , contentType: 'application/json'
+            , page: true //开启分页
+            , url: ctx + 'product/listByPage' //数据接口
+            , method: 'POST'
+            , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": CoreUtil.isEmpty(res.data) ? 0 : res.data.total, //解析数据长度
+                    "data": CoreUtil.isEmpty(res.data) ? null : res.data.records //解析数据列表
+                }
             }
-            break;
-          case 'add':
-            toUnDisabled();
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    {field: 'productName', width: 250, title: '产品名称', sort: true},
+                    {field: 'productCode', width: 250, title: '产品编码', sort: true},
+                    {field: 'detailDescription', title: '详细描述', sort: true},
+                    {
+                        field: 'status', width: 100, title: '状态', sort: true, templet: function (item) {
+                            return getDictLabel('productStatus', item.status);
+                        }
+                    },
+                    {field: 'remark', title: '备注', sort: true},
+                    {field: 'updatedBy', title: '更新人', sort: true},
+                    {field: 'updatedTime', title: '更新时间', sort: true},
+                    {width: 180, toolbar: "#tool", title: '操作'}
+                ]
+            ]
+            , toolbar: '#toolbar'
+        });
+
+
+        //表头工具
+        table.on('toolbar(showTable)', function (obj) {
+            switch (obj.event) {
+                case 'batchDeleted':
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var data = checkStatus.data;
+                    if (data.length == 0) {
+                        layer.msg("请选择要批量删除的列");
+                    } else {
+                        var ids = [];
+                        $(data).each(function (index, item) {
+                            ids.push(item.id);
+                        });
+                        tipDialog(ids);
+                    }
+                    break;
+                case 'add':
+                    toUnDisabled();
+                    $(".table_div").hide();
+                    $(".operation").show();
+                    $(".title").html("新增");
+                    setTimeout(function () {
+                        form.val('info', {
+                            "test": "test"
+                            , "id": ""
+                            , "productCode": ""
+                            , "productName": ""
+                            , "productNameEn": ""
+                            , "brandName": ""
+                            , "categoryId": ""
+                            , "mainImageUrl": ""
+                            , "thumbnailImageUrl": ""
+                            , "shortDescription": ""
+                            , "detailDescription": ""
+                            , "status": ""
+                            , "remark": ""
+                            , "updatedBy": ""
+                            , "createdTime": ""
+                            , "updatedTime": ""
+                        });
+                    }, 200);
+                    break;
+            }
+            ;
+        });
+        //列操作
+        table.on('tool(showTable)', function (obj) {
+            var data = obj.data;
+            switch (obj.event) {
+                case 'del':
+                    var ids = [];
+                    ids.push(data.id);
+                    tipDialog(ids);
+                    break;
+                case 'look':
+                    backshow(data);
+                    toDisabled();
+                    break;
+                case 'edit':
+                    backshow(data);
+                    $(".title").html("编辑");
+                    toUnDisabled();
+                    break;
+            }
+        });
+
+        //删除
+        var tipDialog = function (ids) {
+            layer.open({
+                content: "确定要删除么?",
+                yes: function (index, layero) {
+                    layer.close(index); //如果设定了yes回调，需进行手工关闭
+                    CoreUtil.sendDelete(ctx + "product/delete", ids, function (res) {
+                        layer.msg(res.msg, {time: 1000}, function () {
+                            tableIns1.reload();
+                        });
+                    });
+                }
+            });
+        };
+
+        //返回
+        $("#btn_cancel").click(function () {
+            $(".table_div").show();
+            $(".operation").hide();
+            tableIns1.reload();
+            return false;
+        });
+
+        //监听保存
+        form.on('submit(submit)', function (data) {
+            if (data.field.id === undefined || data.field.id === null || data.field.id === "") {
+                CoreUtil.sendPost(ctx + "product/add", data.field, function (res) {
+                    $(".table_div").show();
+                    $(".operation").hide();
+                    tableIns1.reload();
+                });
+            } else {
+                CoreUtil.sendPut(ctx + "product/update", data.field, function (res) {
+                    $(".table_div").show();
+                    $(".operation").hide();
+                    tableIns1.reload();
+                });
+            }
+
+            return false;
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            tableIns1.reload({
+                page: {
+                    curr: 1
+                }
+                , where: data.field
+            });
+            return false;
+        });
+
+        //回显
+        var backshow = function (data) {
             $(".table_div").hide();
             $(".operation").show();
-            $(".title").html("新增");
+            $(".title").html("查看");
             setTimeout(function () {
-              form.val('info', {
-                "test": "test"
-                , "id": ""
-                , "productCode": ""
-                , "productName": ""
-                , "productNameEn": ""
-                , "brandName": ""
-                , "categoryId": ""
-                , "mainImageUrl": ""
-                , "thumbnailImageUrl": ""
-                , "shortDescription": ""
-                , "detailDescription": ""
-                , "status": ""
-                , "remark": ""
-                , "updatedBy": ""
-                , "createdTime": ""
-                , "updatedTime": ""
-              });
+                form.val('info', {
+                    "test": "test"
+                    , "id": data.id
+                    , "productCode": data.productCode
+                    , "productName": data.productName
+                    , "productNameEn": data.productNameEn
+                    , "brandName": data.brandName
+                    , "categoryId": data.categoryId
+                    , "mainImageUrl": data.mainImageUrl
+                    , "thumbnailImageUrl": data.thumbnailImageUrl
+                    , "shortDescription": data.shortDescription
+                    , "detailDescription": data.detailDescription
+                    , "status": data.status
+                    , "remark": data.remark
+                    , "updatedBy": data.updatedBy
+                    , "createdTime": data.createdTime
+                    , "updatedTime": data.updatedTime
+                });
             }, 200);
-            break;
-        };
-      });
-      //列操作
-      table.on('tool(showTable)',function (obj) {
-        var data = obj.data;
-        switch (obj.event) {
-          case 'del':
-            var ids=[];
-            ids.push(data.id);
-            tipDialog(ids);
-            break;
-          case 'look':
-            backshow(data);
-            toDisabled();
-            break;
-          case 'edit':
-            backshow(data);
-            $(".title").html("编辑");
-            toUnDisabled();
-            break;
-        }
-      });
-
-      //删除
-      var tipDialog=function (ids) {
-        layer.open({
-          content: "确定要删除么?",
-          yes: function(index, layero){
-            layer.close(index); //如果设定了yes回调，需进行手工关闭
-            CoreUtil.sendDelete(ctx + "product/delete",ids,function (res) {
-              layer.msg(res.msg, {time:1000},function () {
-                tableIns1.reload();
-              });
-            });
-          }
-        });
-      };
-
-      //返回
-      $("#btn_cancel").click(function() {
-        $(".table_div").show();
-        $(".operation").hide();
-        tableIns1.reload();
-        return false;
-      });
-
-      //监听保存
-      form.on('submit(submit)', function(data){
-        if(data.field.id===undefined || data.field.id===null || data.field.id===""){
-          CoreUtil.sendPost(ctx + "product/add",data.field,function (res) {
-            $(".table_div").show();
-            $(".operation").hide();
-            tableIns1.reload();
-          });
-        }else {
-          CoreUtil.sendPut(ctx + "product/update",data.field,function (res) {
-            $(".table_div").show();
-            $(".operation").hide();
-            tableIns1.reload();
-          });
         }
 
-        return false;
-      });
+        //禁用输入
+        var toDisabled = function () {
+            $(".oper").hide();
+            $(".disabled").each(function (index, elem) {
+                $(elem).attr("disabled", "")
+            })
+        }
 
-      // 监听搜索操作
-      form.on('submit(data-search-btn)', function (data) {
-        //执行搜索重载
-        tableIns1.reload({
-          page: {
-            curr: 1
-          }
-          , where: data.field
-        });
-        return false;
-      });
-
-      //回显
-      var backshow = function (data) {
-        $(".table_div").hide();
-        $(".operation").show();
-        $(".title").html("查看");
-        setTimeout(function () {
-          form.val('info', {
-            "test": "test"
-                        , "id": data.id
-                        , "productCode": data.productCode
-                        , "productName": data.productName
-                        , "productNameEn": data.productNameEn
-                        , "brandName": data.brandName
-                        , "categoryId": data.categoryId
-                        , "mainImageUrl": data.mainImageUrl
-                        , "thumbnailImageUrl": data.thumbnailImageUrl
-                        , "shortDescription": data.shortDescription
-                        , "detailDescription": data.detailDescription
-                        , "status": data.status
-                        , "remark": data.remark
-                        , "updatedBy": data.updatedBy
-                        , "createdTime": data.createdTime
-                        , "updatedTime": data.updatedTime
-                    });
-        }, 200);
-      }
-
-      //禁用输入
-      var toDisabled = function () {
-        $(".oper").hide();
-        $(".disabled").each(function (index, elem) {
-          $(elem).attr("disabled", "")
-        })
-      }
-
-      //放开输入
-      var toUnDisabled = function () {
-        $(".oper").show();
-        $(".disabled").each(function (index, elem) {
-          $(elem).removeAttr("disabled", "")
-        })
-      }
+        //放开输入
+        var toUnDisabled = function () {
+            $(".oper").show();
+            $(".disabled").each(function (index, elem) {
+                $(elem).removeAttr("disabled", "")
+            })
+        }
     });
 </script>

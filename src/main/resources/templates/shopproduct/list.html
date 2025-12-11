@@ -58,7 +58,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">状态</label>
                 <div class="layui-input-block">
-                    <select name="status" id="status0" lay-filter="status0"></select>
+                    <select name="status" class="dict-select disabled" data-dict-type="ProductStatus" data-placeholder="Select..."></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -96,7 +96,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">状态</label>
                     <div class="layui-input-inline">
-                        <select name="status" id="status1" lay-filter="status1"></select>
+                        <select name="status" class="dict-select disabled" data-dict-type="ProductStatus" data-placeholder="Select..."></select>
                     </div>
                 </div>
                 <div class="layui-inline ">
@@ -129,13 +129,7 @@
         var table = layui.table;
         var form = layui.form;
         var layer = layui.layer;
-        var dictTypes = ['productStatus', 'enable', 'shopType', 'active'];
-
-        // 一次性加载
-        loadDicts(dictTypes, function () {
-            renderDictSelect('productStatus', $('#status0'), '请选择', 'af1');
-            renderDictSelect('productStatus', $('#status1'), '请选择', 'sp1');
-        })
+        initDictSelects();
         //加载table
         var tableIns1 = table.render({
             elem: '#showTable'

@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.company.project.common.utils.Win88Util;
+import com.company.project.entity.ShopProductEntity;
+import com.company.project.entity.ShopSkuEntity;
 import com.company.project.entity.SysUser;
+import com.company.project.service.ShopProductService;
+import com.company.project.service.ShopSkuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -34,6 +38,12 @@ import com.company.project.service.ShopService;
 public class ShopController {
     @Autowired
     private ShopService shopService;
+
+    @Autowired
+    private ShopSkuService shopSkuService;
+
+    @Autowired
+    private ShopProductService shopProductService;
 
     /**
      * 跳转到页面
@@ -82,6 +92,8 @@ public class ShopController {
     @ResponseBody
     public DataResult delete(@RequestBody @ApiParam(value = "id集合") List<String> ids) {
         shopService.removeByIds(ids);
+        shopProductService.remove(Wrappers.<ShopProductEntity>query().in("shop_id", ids));
+        shopSkuService.remove(Wrappers.<ShopSkuEntity>query().in("shop_id", ids));
         return DataResult.success();
     }
 

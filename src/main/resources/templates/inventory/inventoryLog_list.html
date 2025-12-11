@@ -21,7 +21,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label" style="width: 110px;">Change Type</label>
                     <div class="layui-input-inline" style="width: 220px;">
-                        <select name="changeType" id="changeType" lay-filter="changeType"></select>
+                        <select name="changeType" class="dict-select disabled" data-dict-type="InventoryChange" data-placeholder="All Types"></select>
                     </div>
                 </div>
 
@@ -80,48 +80,53 @@
             elem: '#createdTimeEnd'
         });
 
-        loadDict('InventoryChangeType');
-        renderDictSelect('InventoryChangeType', $('#changeType'), 'All Types');
+        var tableIns;
+        initDictSelects(function (){
+            tableIns = renderTable();
+        });
 
         var warehouseId = $('#warehouseIdHid').val();
         var skuId = $('#skuIdHid').val();
 
+
         // Table render
-        var tableIns = table.render({
-            elem: '#showTable',
-            contentType: 'application/json',
-            page: true,
-            method: 'POST',
-            url: ctx + 'inventoryLog/listByPage',
-            where: {
-                warehouseId: warehouseId,
-                skuId: skuId
-            },
-            parseData: function (res) {
-                return {
-                    code: res.code,
-                    msg: res.msg,
-                    count: res.data ? res.data.total : 0,
-                    data: res.data ? res.data.records : []
-                };
-            },
-            cols: [
-                [
-                    {type: 'numbers', title: '#'},
-                    {field: 'changeQty', title: 'Change Qty'},
-                    {
-                        field: 'changeType', title: 'Change Type', templet: function (param) {
-                            return getDictLabel('InventoryChangeType', param.changeType);
-                        }
-                    },
-                    {field: 'qtyBefore', title: 'Qty Before'},
-                    {field: 'qtyAfter', title: 'Qty After'},
-                    {field: 'remark', title: 'Remark'},
-                    {field: 'createdBy', title: 'Created By'},
-                    {field: 'createdTime', title: 'Created Time'}
+        function renderTable() {
+            return table.render({
+                elem: '#showTable',
+                contentType: 'application/json',
+                page: true,
+                method: 'POST',
+                url: ctx + 'inventoryLog/listByPage',
+                where: {
+                    warehouseId: warehouseId,
+                    skuId: skuId
+                },
+                parseData: function (res) {
+                    return {
+                        code: res.code,
+                        msg: res.msg,
+                        count: res.data ? res.data.total : 0,
+                        data: res.data ? res.data.records : []
+                    };
+                },
+                cols: [
+                    [
+                        {type: 'numbers', title: '#'},
+                        {field: 'changeQty', title: 'Change Qty'},
+                        {
+                            field: 'changeType', title: 'Change Type', templet: function (param) {
+                                return getDictLabel('InventoryChange', param.changeType);
+                            }
+                        },
+                        {field: 'qtyBefore', title: 'Qty Before'},
+                        {field: 'qtyAfter', title: 'Qty After'},
+                        {field: 'remark', title: 'Remark'},
+                        {field: 'createdBy', title: 'Created By'},
+                        {field: 'createdTime', title: 'Created Time'}
+                    ]
                 ]
-            ]
-        });
+            });
+        }
 
         // Search
         form.on('submit(data-search-btn)', function (data) {

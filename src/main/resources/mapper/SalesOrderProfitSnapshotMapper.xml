@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.project.mapper.SalesOrderProfitSnapshotMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.company.project.entity.SalesOrderProfitSnapshotEntity" id="salesOrderProfitSnapshotMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="platformCode" column="platform_code"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="platformOrderNo" column="platform_order_no"/>
+        <result property="snapshotDate" column="snapshot_date"/>
+        <result property="orderCurrency" column="order_currency"/>
+        <result property="baseCurrency" column="base_currency"/>
+        <result property="fxRateOrderToBase" column="fx_rate_order_to_base"/>
+        <result property="revenueGoods" column="revenue_goods"/>
+        <result property="revenueShipping" column="revenue_shipping"/>
+        <result property="revenueTax" column="revenue_tax"/>
+        <result property="platformSubsidyInc" column="platform_subsidy_inc"/>
+        <result property="costGoods" column="cost_goods"/>
+        <result property="costShipping" column="cost_shipping"/>
+        <result property="costOtherAlloc" column="cost_other_alloc"/>
+        <result property="feeCommission" column="fee_commission"/>
+        <result property="feePayment" column="fee_payment"/>
+        <result property="feeAffiliate" column="fee_affiliate"/>
+        <result property="feeOther" column="fee_other"/>
+        <result property="revenueTotalOrder" column="revenue_total_order"/>
+        <result property="costTotalOrder" column="cost_total_order"/>
+        <result property="feeTotalOrder" column="fee_total_order"/>
+        <result property="grossProfitOrder" column="gross_profit_order"/>
+        <result property="netProfitOrder" column="net_profit_order"/>
+        <result property="revenueTotalBase" column="revenue_total_base"/>
+        <result property="costTotalBase" column="cost_total_base"/>
+        <result property="feeTotalBase" column="fee_total_base"/>
+        <result property="grossProfitBase" column="gross_profit_base"/>
+        <result property="netProfitBase" column="net_profit_base"/>
+        <result property="calcVersion" column="calc_version"/>
+        <result property="remark" column="remark"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+    </resultMap>
+
+
+</mapper>

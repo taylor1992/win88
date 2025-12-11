@@ -21,13 +21,13 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">供应商</label>
                 <div class="layui-input-block">
-                    <select name="supplierId" id="supplier" lay-verify="required" lay-verType="tips"  lay-filter="supplier"></select>
+                    <select name="supplierId" class="dict-select disabled"  lay-verify="required" data-dict-type="supplier" data-placeholder="Select one"></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">采购币种</label>
                 <div class="layui-input-block">
-                    <select name="currencyCode" id="currencyCode" lay-verify="required" lay-verType="tips"  lay-filter="currencyCode"></select>
+                    <select name="currencyCode" class="dict-select disabled"  lay-verify="required" data-dict-type="Currency" data-placeholder="Select one"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -47,13 +47,13 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">分摊方式</label>
                 <div class="layui-input-block">
-                    <select name="allocationMethod" lay-verify="required" lay-verType="tips"  id="am" lay-filter="am"></select>
+                    <select name="allocationMethod" class="dict-select disabled" data-dict-type="AllocationMethod" data-placeholder="Select one"></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">物流方式</label>
                 <div class="layui-input-block">
-                    <select name="logisticsMethod" lay-verify="required" lay-verType="tips"  id="lm" lay-filter="lm"></select>
+                    <select name="logisticsMethod" class="dict-select disabled" data-dict-type="LogisticsMethod" data-placeholder="Select one"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -79,7 +79,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">采购状态</label>
                 <div class="layui-input-block">
-                    <select name="status" lay-verify="required" lay-verType="tips"  id="addPurchaseStatus" lay-filter="addPurchaseStatus"></select>
+                    <select name="status" class="dict-select disabled" data-dict-type="PurchaseStatus" data-placeholder="Select one"></select>
                 </div>
             </div>
             <div class="layui-form-item">
@@ -122,10 +122,10 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">入库日期</label>
                     <div class="layui-input-inline">
-                        <input type="text" class="layui-input" id="warehouseInTimeBegin" name="warehouseInTimeBegin">
+                        <input type="text" class="layui-input" autocomplete="off" id="warehouseInTimeBegin" name="warehouseInTimeBegin">
                     </div>
                     <div class="layui-input-inline">
-                        <input type="text" class="layui-input" id="warehouseInTimeEnd" name="warehouseInTimeEnd">
+                        <input type="text" class="layui-input" autocomplete="off" id="warehouseInTimeEnd" name="warehouseInTimeEnd">
                     </div>
                 </div>
 
@@ -165,6 +165,8 @@
         var layer = layui.layer;
         var laydate = layui.laydate;
 
+        initDictSelects();
+
         laydate.render({
             elem: '#warehouseInTime'
         });
@@ -177,16 +179,6 @@
         laydate.render({
             elem: '#warehouseInTimeEnd'
         });
-        var dictTypes = ['allocationMethod', 'logisticsMethod', 'purchaseStatus', 'supplier','currency'];
-
-        // 一次性加载
-        loadDicts(dictTypes, function () {
-            renderDictSelect('purchaseStatus', $('#addPurchaseStatus'), '请选择', 'addForm');
-            renderDictSelect('logisticsMethod', $('#lm'), '请选择', 'addForm');
-            renderDictSelect('allocationMethod', $('#am'), '请选择', 'addForm');
-            renderDictSelect('currency', $('#currencyCode'), '请选择', 'addForm');
-            renderDictSelect('supplier', $('#supplier'), '请选择', 'addForm');
-        })
 
         //加载table
         var tableIns1 = table.render({
@@ -211,12 +203,12 @@
                     {field: 'amountGoodsTotal', title: '金额', sort: true},
                     {field: 'amountFreightTotal', title: '运费', sort: true},
                     {field: 'currencyCode', title: '币种', sort: true},
-                    {field: 'allocationMethod', title: '分摊方式',hide:true, sort: true,templet:function(p){return getDictLabel('allocationMethod',p.allocationMethod);}},
-                    {field: 'logisticsMethod', title: '物流方式',hide:true, sort: true,templet:function(p){return getDictLabel('logisticsMethod',p.logisticsMethod);}},
+                    {field: 'allocationMethod', title: '分摊方式',hide:true, sort: true,templet:function(p){return getDictLabel('AllocationMethod',p.allocationMethod);}},
+                    {field: 'logisticsMethod', title: '物流方式',hide:true, sort: true,templet:function(p){return getDictLabel('LogisticsMethod',p.logisticsMethod);}},
                     {field: 'logisticsTrackingNo',width:150, title: '物流单号', sort: true},
                     {field: 'shipOutTime',width:110,  title: '发货时间', sort: true},
                     {field: 'warehouseInTime',width:110, title: '入库时间', sort: true},
-                    {field: 'status', title: '状态', sort: true,templet:function(p){return getDictLabel('purchaseStatus',p.status);}},
+                    {field: 'status', title: '状态', sort: true,templet:function(p){return getDictLabel('PurchaseStatus',p.status);}},
                     {field: 'remark', title: '备注', sort: true,hide:true},
                     {field: 'updatedBy', title: '更新人', sort: true,hide:true},
                     {field: 'updatedTime',width:170, title: '更新时间', sort: true},

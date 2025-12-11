@@ -28,14 +28,14 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">店铺类型</label>
                 <div class="layui-input-inline">
-                    <select name="type" id="addtype" lay-filter="addtype"></select>
+                    <select name="type" id="type_form" class="dict-select disabled" data-dict-type="PlatformCode" data-placeholder="Select platform"></select>
                 </div>
             </div>
 
             <div class="layui-form-item">
                 <label class="layui-form-label">注册时间</label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="laydate" name="registerDate"
+                    <input type="text" class="layui-input" id="laydate" name="registerDate" autocomplete="off"
                            placeholder="请输入注册时间">
                 </div>
             </div>
@@ -93,16 +93,12 @@
       var layer = layui.layer;
         var laydate = layui.laydate;
 
+        initDictSelects();
+
         //初始化laydate实例
         laydate.render({
             elem: '#laydate'
         });
-        var dictTypes = ['purchaseStatus', 'enable', 'shopType', 'active'];
-
-        // 一次性加载
-        loadDicts(dictTypes, function () {
-            renderDictSelect('shopType', $('#addtype'), '请选择', 'addForm');
-        })
       //加载table
       var tableIns1 = table.render({
         elem: '#showTable'
@@ -123,7 +119,7 @@
             {type: 'checkbox', fixed: 'left'},
             {field: 'shopId', title: '店铺ID', sort: true},
             {field: 'type', title: '店铺类型', sort: true, templet: function (d) {
-                    return getDictLabel('shopType', d.type);
+                    return getDictLabel('PlatformCode', d.type);
                 }},
             {field: 'name', title: '店铺名', sort: true},
             {field: 'registerDate', title: '注册时间', sort: true},
@@ -148,7 +144,7 @@
             }else {
               var ids = [];
               $(data).each(function (index,item) {
-                ids.push(item.id);
+                ids.push(item.shopId);
               });
               tipDialog(ids);
             }
@@ -173,11 +169,12 @@
       });
       //列操作
       table.on('tool(showTable)',function (obj) {
+          debugger;
         var data = obj.data;
         switch (obj.event) {
           case 'del':
             var ids=[];
-            ids.push(data.id);
+            ids.push(data.shopId);
             tipDialog(ids);
             break;
           case 'look':

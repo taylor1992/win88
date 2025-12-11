@@ -16,25 +16,25 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">目标币种</label>
                 <div class="layui-input-inline">
-                    <select name="toCurrency" id="toCurrency0" lay-filter="toCurrency0"></select>
+                    <select name="toCurrency" class="dict-select disabled" data-dict-type="Currency" data-placeholder="Select ..."></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">汇率币种</label>
                 <div class="layui-input-inline">
-                    <select name="fromCurrency" id="fromCurrency0" lay-filter="fromCurrency0"></select>
+                    <select name="fromCurrency" class="dict-select disabled" data-dict-type="Currency" data-placeholder="Select ..." ></select>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">汇率开始日期</label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="startDate" name="startDate">
+                    <input type="text" class="layui-input" id="startDate" autocomplete="off" name="startDate">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">汇率结束日期</label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="endDate" name="endDate">
+                    <input type="text" class="layui-input" id="endDate" autocomplete="off" name="endDate">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -56,7 +56,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label">目标币种</label>
                 <div class="layui-input-inline">
-                    <select name="toCurrency" id="toCurrency1" lay-filter="toCurrency1"></select>
+                    <select name="toCurrency" class="dict-select disabled" data-dict-type="Currency" data-placeholder="Select ..."></select>
                 </div>
             </div>
 
@@ -64,20 +64,20 @@
             <div class="layui-inline">
                 <label class="layui-form-label">汇率币种</label>
                 <div class="layui-input-inline">
-                    <select name="fromCurrency" id="fromCurrency1" lay-filter="fromCurrency1"></select>
+                    <select name="fromCurrency" class="dict-select disabled" data-dict-type="Currency" data-placeholder="Select ..."></select>
                 </div>
             </div>
 
             <div class="layui-inline">
                 <label class="layui-form-label">开始日期</label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="startDate1" name="startDate">
+                    <input type="text" class="layui-input" id="startDate1" autocomplete="off" name="startDate">
                 </div>
             </div>
             <div class="layui-inline">
                 <label class="layui-form-label">结束日期</label>
                 <div class="layui-input-block">
-                    <input type="text" class="layui-input" id="endDate1" name="endDate">
+                    <input type="text" class="layui-input" id="endDate1" autocomplete="off" name="endDate">
                 </div>
             </div>
 
@@ -116,15 +116,7 @@
       var formSelects = layui.formSelects;
       var laydate = layui.laydate;
 
-        var dictTypes = ['purchaseStatus', 'enable', 'shopType', 'currency'];
-
-        // 一次性加载
-        loadDicts(dictTypes, function () {
-            renderDictSelect('currency', $('#toCurrency0'), '请选择', 'addForm');
-            renderDictSelect('currency', $('#fromCurrency0'), '请选择', 'addForm');
-            renderDictSelect('currency', $('#toCurrency1'), '请选择', 'searchForm');
-            renderDictSelect('currency', $('#fromCurrency1'), '请选择', 'searchForm');
-        })
+        initDictSelects();
 
         //初始化laydate实例
         laydate.render({

@@ -86,7 +86,7 @@ public class SysDictController {
             queryWrapper.or();
             queryWrapper.like(SysDictEntity::getRemark, sysDict.getName());
         }
-        queryWrapper.orderByAsc(SysDictEntity::getName);
+        queryWrapper.orderByDesc(SysDictEntity::getCreateTime);
         return sysDictService.page(sysDict.getQueryPage(), queryWrapper);
     }
 
