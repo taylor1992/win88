@@ -1,152 +1,69 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Order Management</title>
+    <title>Sales Order Management & Import</title>
     <div th:replace="~{layout}"></div>
+    <style>
+        .layui-form-label {
+            width: 110px;
+        }
+        .layui-input-inline {
+            width: 200px;
+        }
+
+    </style>
 </head>
 <body>
 
-<!-- ============== Order form (view only for now) ============== -->
-<div class="panel panel-default operation" hidden>
-    <div class="panel-heading title"></div>
-    <div class="layui-card-body">
-        <form class="layui-form" action="" lay-filter="info">
-            <input name="id" hidden/>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Order Date</label>
-                <div class="layui-input-block">
-                    <input type="text" id="order_date_form" name="orderDate"
-                           placeholder="Select order date"
-                           autocomplete="off" class="layui-input disabled">
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Platform</label>
-                <div class="layui-input-block">
-                    <select name="platformCode" id="platform_form" class="disabled"></select>
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Shop</label>
-                <div class="layui-input-block">
-                    <select name="shopId" id="shop_form" class="disabled"></select>
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Order No</label>
-                <div class="layui-input-block">
-                    <input type="text" name="platformOrderNo"
-                           placeholder="Platform order no."
-                           autocomplete="off" class="layui-input disabled">
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Status</label>
-                <div class="layui-input-block">
-                    <select name="orderStatus" id="status_form" class="disabled"></select>
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Buyer Paid</label>
-                <div class="layui-input-block">
-                    <input type="number" step="0.01" name="buyerPayAmount"
-                           placeholder="Buyer payment amount"
-                           autocomplete="off" class="layui-input disabled">
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Seller Receivable</label>
-                <div class="layui-input-block">
-                    <input type="number" step="0.01" name="sellerReceivableAmount"
-                           placeholder="Seller receivable amount"
-                           autocomplete="off" class="layui-input disabled">
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Currency</label>
-                <div class="layui-input-block">
-                    <input type="text" name="currency"
-                           placeholder="Order currency, e.g. PHP"
-                           autocomplete="off" class="layui-input disabled">
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label">Remark</label>
-                <div class="layui-input-block">
-                    <textarea name="remark"
-                              placeholder="Optional remark"
-                              class="layui-textarea disabled"></textarea>
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <div class="layui-input-block">
-                    <!-- 订单一般不手工新增/编辑，这里可以保留按钮，暂时禁用 -->
-                    <button type="submit" class="layui-btn" lay-submit lay-filter="submit">Save</button>
-                    <button class="layui-btn layui-btn-primary" id="btn_cancel">Back</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- ============== List area ============== -->
 <div class="table_div">
     <div id="searchParam" sa:hasPermission="salesOrder:list">
         <form class="layui-form" lay-filter="searchForm">
             <div class="layui-form-item">
 
-                <!-- Order date range -->
                 <div class="layui-inline">
-                    <label class="layui-form-label" style="width: 100px;">Order Date</label>
+                    <label class="layui-form-label">Shop Name</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="orderDateBegin" name="orderDateBegin"
-                               placeholder="Start date" autocomplete="off" class="layui-input">
-                    </div>
-                    <div class="layui-form-mid">-</div>
-                    <div class="layui-input-inline">
-                        <input type="text" id="orderDateEnd" name="orderDateEnd"
-                               placeholder="End date" autocomplete="off" class="layui-input">
+                        <select name="shopId" class="dict-select disabled" data-dict-type="Shop"
+                                data-placeholder="All Platforms"></select>
                     </div>
                 </div>
 
-                <!-- Platform -->
+                <div class="layui-inline">
+                    <label class="layui-form-label">Order No</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="platformOrderNo" placeholder="Platform Order No" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
                 <div class="layui-inline">
                     <label class="layui-form-label">Platform</label>
                     <div class="layui-input-inline">
-                        <select name="platformCode" id="sPlatform"></select>
+                        <select name="platformCode" class="dict-select disabled" data-dict-type="PlatformCode"
+                                data-placeholder="All Platforms"></select>
                     </div>
                 </div>
 
-                <!-- Shop -->
-                <div class="layui-inline">
-                    <label class="layui-form-label">Shop</label>
-                    <div class="layui-input-inline">
-                        <select name="shopId" id="sShop"></select>
-                    </div>
-                </div>
-
-                <!-- Order status -->
                 <div class="layui-inline">
                     <label class="layui-form-label">Status</label>
                     <div class="layui-input-inline">
-                        <select name="orderStatus" id="sStatus"></select>
+                        <select name="orderStatus" class="dict-select disabled" data-dict-type="OrderStatus"
+                                data-placeholder="All Statuses"></select>
                     </div>
                 </div>
 
-                <!-- Search -->
+                <div class="layui-inline">
+                    <label class="layui-form-label"  style="width: 110px;">Order Time</label>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" placeholder="Select start time" class="layui-input" id="orderTimeBegin" name="orderTimeBegin">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input type="text" autocomplete="off" class="layui-input" placeholder="Select end time" id="orderTimeEnd" name="orderTimeEnd">
+                    </div>
+                </div>
+
                 <div class="layui-inline">
                     <button type="submit" class="layui-btn layui-btn-primary"
                             lay-submit lay-filter="data-search-btn">
@@ -161,231 +78,115 @@
     <table class="layui-table" id="showTable" lay-filter="showTable"></table>
 </div>
 
-<!-- Toolbar -->
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container oper">
-        <!-- 如果不支持手工新增，可去掉 Add -->
-        <!--<button class="layui-btn layui-btn-sm" lay-event="add"
-                sa:hasPermission="salesOrder:add">Add</button>-->
-        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDeleted"
-                sa:hasPermission="salesOrder:delete">Delete
+        <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="import" sa:hasPermission="salesOrder:import">
+            <i class="layui-icon">&#xe67c;</i> Import Orders
         </button>
-
-        <!-- Import orders -->
-        <button class="layui-btn layui-btn-sm layui-btn-normal" id="btn_import_orders"
-                sa:hasPermission="salesOrder:import">Import Orders
+        <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="refresh">
+            <i class="layui-icon">&#xe666;</i> Refresh
         </button>
     </div>
 </script>
 
-<!-- Row tools -->
 <script type="text/html" id="tool">
-    <a class="layui-btn layui-btn-xs" lay-event="look">View</a>
-    <!-- 通常订单不允许编辑金额类字段，可以视情况隐藏 Edit -->
-    <!--<a class="layui-btn layui-btn-xs" lay-event="edit"
-       sa:hasPermission="salesOrder:update">Edit</a>-->
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
-       sa:hasPermission="salesOrder:delete">Delete</a>
+    <a class="layui-btn layui-btn-xs" lay-event="detail" sa:hasPermission="salesOrderDetail:view">View Details</a>
 </script>
 
 </body>
 </html>
 
-<!-- 国际化 -->
 <script>
-    window.APP_LANG = 'en';
+    window.APP_LANG = 'en'; // 沿用您的语言设置
 </script>
 <script th:src="@{/static/js/layui.i18n.js(v=${T(System).currentTimeMillis()})}"></script>
-
 <script>
-    layui.use(['table', 'form', 'laydate', 'layer', 'upload'], function () {
+    layui.use(function () {
         var table = layui.table;
         var form = layui.form;
-        var laydate = layui.laydate;
         var layer = layui.layer;
-        var upload = layui.upload;
         var $ = layui.$;
+        var upload = layui.upload;
 
-        var dictTypes = ['OrderPlatform', 'Shop', 'OrderStatus'];
-
-        loadDicts(dictTypes, function () {
-            renderDictSelect('OrderPlatform', $('#sPlatform'), 'All platforms');
-            renderDictSelect('OrderPlatform', $('#platform_form'), 'Select platform');
-
-            renderDictSelect('Shop', $('#sShop'), 'All shops');
-            renderDictSelect('Shop', $('#shop_form'), 'Select shop');
-
-            renderDictSelect('OrderStatus', $('#sStatus'), 'All status');
-            renderDictSelect('OrderStatus', $('#status_form'), 'Select status');
-        });
-
-        // ======== Date pickers ========
+        // 开始时间
         LaydateEn.render({
-            elem: '#orderDateBegin',
-            format: 'yyyy-MM-dd',
-            type: 'date'
-        });
-        LaydateEn.render({
-            elem: '#orderDateEnd',
-            format: 'yyyy-MM-dd',
-            type: 'date'
-        });
-        LaydateEn.render({
-            elem: '#order_date_form',
-            format: 'yyyy-MM-dd',
-            type: 'date'
+            elem: '#orderTimeBegin'
+            // 也可以覆盖默认 format 等：
+            // format: 'yyyy/MM/dd HH:mm'
         });
 
-        // ======== Table render ========
-        var tableIns1 = table.render({
-            elem: '#showTable',
-            contentType: 'application/json',
-            page: true,
-            url: ctx + 'salesOrder/listByPage',
-            method: 'POST',
-            parseData: function (res) {
-                return {
-                    code: res.code,
-                    msg: res.msg,
-                    count: res.data ? res.data.total : 0,
-                    data: res.data ? res.data.records : []
-                };
-            },
-            cols: [
-                [
-                    {type: 'checkbox', fixed: 'left'},
-                    {field: 'orderDate', title: 'Order Date', sort: true},
-                    {
-                        field: 'platformCode', title: 'Platform', templet: function (d) {
-                            return getDictLabel('OrderPlatform', d.platformCode);
-                        }
-                    },
-                    {
-                        field: 'shopId', title: 'Shop', templet: function (d) {
-                            return getDictLabel('Shop', d.shopId);
-                        }
-                    },
-                    {field: 'platformOrderNo', title: 'Order No', sort: true},
-                    {field: 'buyerPayAmount', title: 'Buyer Paid'},
-                    {field: 'sellerReceivableAmount', title: 'Seller Receivable'},
-                    {
-                        field: 'orderStatus', title: 'Status', templet: function (d) {
-                            return getDictLabel('OrderStatus', d.orderStatus);
-                        }
-                    },
-                    {field: 'currency', title: 'Currency'},
-                    {field: 'updatedTime', title: 'Updated Time', sort: true},
-                    {toolbar: '#tool', title: 'Actions', fixed: 'right'}
-                ]
-            ],
-            toolbar: '#toolbar'
+        // 结束时间
+        LaydateEn.render({
+            elem: '#orderTimeEnd'
+        });
+        var tableIns1;
+
+        initDictSelects(function () {
+            tableIns1 = renderTable();
         });
 
-        // ======== Toolbar events ========
+        // Table render: 订单列表
+        function renderTable() {
+            return table.render({
+                elem: '#showTable',
+                contentType: 'application/json',
+                page: true,
+                url: ctx + 'salesOrder/listByPage',
+                method: 'POST',
+                parseData: function (res) {
+                    return {
+                        code: res.code,
+                        msg: res.msg,
+                        count: CoreUtil.isEmpty(res.data) ? 0 : res.data.total,
+                        data: CoreUtil.isEmpty(res.data) ? null : res.data.records
+                    }
+                },
+                cols: [
+                    [
+                        {type: 'checkbox', fixed: 'left'},
+                        {field: 'platformOrderNo', title: 'Order No', sort: true},
+                        {
+                            field: 'platformCode', title: 'Platform',  templet: function (param) {
+                                return getDictLabel('PlatformCode', param.platformCode);
+                            }
+                        },
+                        {
+                            field: 'orderStatus', title: 'Status', sort: true, templet: function (param) {
+                                return getDictLabel('OrderStatus', param.orderStatus);
+                            }
+                        },
+                        {field: 'buyerPayAmount', title: 'Buyer Pay Amount',  sort: true},
+                        {field: 'orderTime', width: 180, title: 'Order Time', sort: true},
+                        {width: 100, toolbar: '#tool', title: 'Actions'}
+                    ]
+                ],
+                toolbar: '#toolbar',
+                where: form.val('searchForm')
+            });
+        }
+
+        // Top toolbar event handling
         table.on('toolbar(showTable)', function (obj) {
             switch (obj.event) {
-                case 'batchDeleted':
-                    var checkStatus = table.checkStatus(obj.config.id);
-                    var data = checkStatus.data;
-                    if (data.length === 0) {
-                        layer.msg("Please select rows to delete.");
-                    } else {
-                        var ids = [];
-                        $(data).each(function (index, item) {
-                            ids.push(item.id);
-                        });
-                        tipDialog(ids);
-                    }
+                case 'import':
+                    openImportDialog(); // 打开导入弹窗
+                    break;
+                case 'refresh':
+                    tableIns1.reload(); // 刷新列表
                     break;
             }
         });
 
-        // ======== Row tools ========
+        // Row tools event handling (View Details)
         table.on('tool(showTable)', function (obj) {
             var data = obj.data;
-            switch (obj.event) {
-                case 'del':
-                    var ids = [data.id];
-                    tipDialog(ids);
-                    break;
-                case 'look':
-                    backshow(data);
-                    toDisabled();
-                    break;
-                case 'edit':
-                    backshow(data);
-                    $(".title").html("Edit Order");
-                    toUnDisabled();
-                    break;
+            if (obj.event === 'detail') {
+                openDetailDialog(data);
             }
         });
 
-        // ======== Delete dialog ========
-        var tipDialog = function (ids) {
-            layer.open({
-                content: "Are you sure to delete selected record(s)?",
-                yes: function (index) {
-                    layer.close(index);
-                    CoreUtil.sendDelete(ctx + "salesOrder/delete", ids, function (res) {
-                        layer.msg(res.msg, {time: 1000}, function () {
-                            tableIns1.reload();
-                        });
-                    });
-                }
-            });
-        };
-
-        // ======== Back button ========
-        $("#btn_cancel").click(function () {
-            $(".table_div").show();
-            $(".operation").hide();
-            tableIns1.reload();
-            return false;
-        });
-
-        // ======== Save (如果你后续允许手动编辑，可以保留逻辑) ========
-        form.on('submit(submit)', function (data) {
-            if (!data.field.orderDate) {
-                layer.msg('Please select order date.');
-                return false;
-            }
-            if (!data.field.platformCode) {
-                layer.msg('Please select platform.');
-                return false;
-            }
-            if (!data.field.shopId) {
-                layer.msg('Please select shop.');
-                return false;
-            }
-
-            if (!data.field.id) {
-                CoreUtil.sendPost(ctx + "salesOrder/add", data.field, function (res) {
-                    layer.msg(res.msg || 'Saved', {time: 800}, function () {
-                        $(".table_div").show();
-                        $(".operation").hide();
-                        tableIns1.reload();
-                    });
-                });
-            } else {
-                CoreUtil.sendPut(ctx + "salesOrder/update", data.field, function (res) {
-                    layer.msg(res.msg || 'Updated', {time: 800}, function () {
-                        $(".table_div").show();
-                        $(".operation").hide();
-                        tableIns1.reload();
-                    });
-                });
-            }
-            return false;
-        });
-
-        // ======== Search ========
+        // Search
         form.on('submit(data-search-btn)', function (data) {
-            var begin = data.field.orderDateBegin;
-            var end = data.field.orderDateEnd;
-            if (begin && end && begin > end) {
-                layer.msg('End date cannot be earlier than start date.');
-                return false;
-            }
             tableIns1.reload({
                 page: {curr: 1},
                 where: data.field
@@ -393,75 +194,111 @@
             return false;
         });
 
-        // ======== Backfill form ========
-        var backshow = function (data) {
-            $(".table_div").hide();
-            $(".operation").show();
-            $(".title").html("View Order");
-            setTimeout(function () {
-                form.val('info', {
-                    id: data.id,
-                    orderDate: data.orderDate,
-                    platformCode: data.platformCode,
-                    shopId: data.shopId,
-                    platformOrderNo: data.platformOrderNo,
-                    orderStatus: data.orderStatus,
-                    buyerPayAmount: data.buyerPayAmount,
-                    sellerReceivableAmount: data.sellerReceivableAmount,
-                    currency: data.currency,
-                    remark: data.remark
-                });
-            }, 200);
-        };
+        // 核心导入功能：弹出 CSV 上传框 (包含店铺选择)
+        function openImportDialog() {
+            var uploadHtml =
+                '<div style="padding: 20px 30px;">' +
+                '  <form class="layui-form" lay-filter="importForm" id="importForm">' +
 
-        // ======== Disable / Enable ========
-        var toDisabled = function () {
-            $(".oper").hide();
-            $(".disabled").each(function (_, elem) {
-                $(elem).attr("disabled", "disabled");
-            });
-            form.render('select');
-        };
-        var toUnDisabled = function () {
-            $(".oper").show();
-            $(".disabled").each(function (_, elem) {
-                $(elem).removeAttr("disabled");
-            });
-            form.render('select');
-        };
+                '    <div class="layui-form-item">' +
+                '      <label class="layui-form-label">Shop Select</label>' +
+                '      <div class="layui-input-block">' +
+                '        <select name="shopId" id="shopIdSelect" class="dict-select" data-dict-type="Shop" lay-verify="required" lay-search data-placeholder="Select a shop"></select>' +
+                '      </div>' +
+                '    </div>' +
 
-        // ======== Import orders (CSV) ========
-        upload.render({
-            elem: '#btn_import_orders',
-            url: ctx + 'salesOrder/importOrders',
-            accept: 'file',
-            exts: 'csv|xlsx|xls',
-            data: function () {
-                var shopId = $('#sShop').val();
-                if (!shopId) {
-                    layer.msg('Please select a shop before importing.');
+                '    <div class="layui-form-item layui-upload-box">' +
+                '      <div class="layui-upload-drag" id="uploadDragArea">' +
+                '        <i class="layui-icon">&#xe67c;</i>' +
+                '        <p>Click or drag **TikTok Order CSV** file here to upload</p>' +
+                '        <p class="layui-upload-area-info" id="fileInfo"></p>' +
+                '      </div>' +
+                '      <div class="layui-progress layui-progress-big" lay-showpercent="yes" lay-filter="importProgress" style="margin-top: 15px; display: none;">' +
+                '          <div class="layui-progress-bar layui-bg-blue" lay-percent="0%"></div>' +
+                '      </div>' +
+                '      <button type="button" class="layui-btn layui-btn-fluid layui-btn-normal" id="startUploadBtn" style="margin-top: 15px; display: none;">Start Upload & Import</button>' +
+                '    </div>' +
+
+                '  </form>' +
+                '</div>';
+
+            var uploadLayerIndex = layer.open({
+                type: 1,
+                title: 'Import Sales Orders (CSV)',
+                area: ['470px', '420px'],
+                content: uploadHtml,
+                btn: ['Close'],
+                end: function () {
                 }
-                return {
-                    shopId: shopId
-                };
-            },
-            before: function () {
-                var shopId = $('#sShop').val();
-                if (!shopId) {
-                    return false;
+            });
+
+            // 重新渲染字典选择框
+            initDictSelects(function () {
+                form.render('select', 'importForm');
+            });
+
+            // 绑定上传事件
+            upload.render({
+                elem: '#uploadDragArea',
+                url: ctx + 'salesOrder/importCsv',
+                accept: 'file',
+                exts: 'csv',
+                auto: false,
+                bindAction: '#startUploadBtn',
+                field: 'file',
+                drag: true,
+                data: {
+                    // 动态获取店铺 ID
+                    shopId: function () {
+                        return $('#shopIdSelect').val();
+                    }
+                },
+                before: function (obj) {
+                    var shopId = $('#shopIdSelect').val();
+                    if (!shopId) {
+                        layer.msg('Please select a shop first.', {icon: 5});
+                        return false;
+                    }
+
+                    $('#startUploadBtn').addClass('layui-btn-disabled').prop('disabled', true);
+                    layui.element.progress('importProgress', '0%');
+                    $('.layui-progress').show();
+                },
+                choose: function (obj) {
+                    var files = obj.pushFile();
+                    var fileName = Object.keys(files)[0];
+                    $('#fileInfo').html('Selected file: <strong style="color: #5fb878;">' + files[fileName].name + '</strong>');
+                    $('#startUploadBtn').show().removeClass('layui-btn-disabled').prop('disabled', false);
+
+                    obj.progress(function (n, elem) {
+                        layui.element.progress('importProgress', n + '%');
+                    });
+                },
+                done: function (res) {
+                    $('#startUploadBtn').hide();
+                    if (res.code === 0) {
+                        var count = res.data && res.data.count ? res.data.count : 'N';
+                        layer.msg('Import successful, ' + count + ' orders processed.', {icon: 1, time: 2000});
+                        tableIns1.reload();
+                        layer.close(uploadLayerIndex);
+                    } else {
+                        layer.alert('Import failed: ' + res.msg, {icon: 2});
+                    }
+                },
+                error: function (index, uploadMsg) {
+                    $('#startUploadBtn').hide();
+                    layer.alert('File upload failed. Please check the network or backend service.', {icon: 2});
                 }
-                layer.load(1);
-            },
-            done: function (res) {
-                layer.closeAll('loading');
-                layer.msg(res.msg || 'Import finished.', {time: 1500}, function () {
-                    tableIns1.reload({page: {curr: 1}});
-                });
-            },
-            error: function () {
-                layer.closeAll('loading');
-                layer.msg('Upload failed, please retry.');
-            }
-        });
+            });
+        }
+
+        function openDetailDialog(row) {
+            layer.open({
+                type: 2,
+                title: 'Order Details: ' + row.platformOrderNo,
+                area: ['90%', '80%'],
+                content: ctx + 'salesOrder/sales-order-detail?platformOrderNo=' + row.platformOrderNo
+            });
+        }
     });
 </script>

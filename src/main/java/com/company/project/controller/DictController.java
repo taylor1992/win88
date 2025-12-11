@@ -29,6 +29,8 @@ public class DictController {
 
     private final SysDictDetailService sysDictDetailService;
 
+    private final ShopService shopService;
+
     // 单个类型（兼容旧代码）
     @GetMapping("/{type}")
     public DataResult getOne(@PathVariable("type") String type) {
@@ -75,6 +77,14 @@ public class DictController {
                 List<ProductEntity> list = productService.list();
                 for (ProductEntity se : list) {
                     OptionVO vo = new OptionVO(se.getId().toString(), se.getProductName());
+                    options.add(vo);
+                }
+                return options;
+            }
+            if ("Shop".equals(type)) {
+                List<ShopEntity> list = shopService.list();
+                for (ShopEntity se : list) {
+                    OptionVO vo = new OptionVO(se.getShopId().toString(), se.getName());
                     options.add(vo);
                 }
                 return options;

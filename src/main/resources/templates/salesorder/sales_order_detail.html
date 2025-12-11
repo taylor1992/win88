@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Detail</title>
+    <div th:replace="~{layout}"></div>
+    <style>
+        /* 样式微调 */
+        .layui-card-header {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .detail-item {
+            padding: 8px 15px;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        .detail-item strong {
+            display: inline-block;
+            width: 150px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-fluid" style="padding: 15px;">
+
+    <div class="layui-card">
+        <div class="layui-card-header">
+            Order Main Info - <span id="platformOrderNoSpan" th:text="${platformOrderNo}"></span>
+        </div>
+        <div class="layui-card-body">
+            <div class="layui-row">
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Shop Name:</strong> <span id="shopName"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Platform:</strong> <span id="platformCode"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Status:</strong> <span id="orderStatus"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Order Time:</strong> <span id="orderTime"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Updated Time:</strong> <span id="updatedTime"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Buyer Pay:</strong> <span id="buyerPayAmount"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Goods Amount:</strong> <span id="goodsAmount"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Tax Amount:</strong> <span id="taxAmount"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Seller Discount:</strong> <span id="sellerDiscountTotal"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Platform Discount:</strong> <span id="platformDiscountTotal"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Shipping Provider:</strong> <span id="shippingProvider"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Tracking No:</strong> <span id="trackingNo"></span></div>
+                <div class="layui-col-md4 detail-item"><strong class="i18n">Currency:</strong> <span id="currencyCode"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-card" style="margin-top: 20px;">
+        <div class="layui-card-header i18n">Order Items Detail</div>
+        <div class="layui-card-body">
+            <table class="layui-hide" id="itemTable" lay-filter="itemTable"></table>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+<script th:inline="javascript">
+    layui.use(function () {
+        var table = layui.table;
+        var $ = layui.$;
+
+        var dictTypes = ['OrderStatus','PlatformCode','Shop'];
+        loadDicts(dictTypes,function () {
+            // 页面初始化时加载数据
+            loadData();
+        });
+
+        // 从后端 Thymeleaf 模板中获取平台订单号
+        var platformOrderNo = [[${platformOrderNo}]];
+
+        // 1. 获取并渲染数据
+        function loadData() {
+            if (!platformOrderNo) {
+                layer.alert('Invalid Order Number.', {icon: 2});
+                return;
+            }
+
+            // AJAX 请求后端接口获取数据
+            $.get(ctx + 'salesOrder/detailsByOrderNo', {platformOrderNo: platformOrderNo}, function(res) {
+                if (res.code === 0 && res.data) {
+                    var order = res.data.order;
+                    var items = res.data.items;
+
+                    // 渲染主表信息
+                    renderOrderMain(order);
+
+                    // 渲染明细表格
+                    renderItemTable(items);
+                } else {
+                    layer.alert(res.msg || 'Failed to load order details.', {icon: 2});
+                }
+            });
+        }
+
+        // 渲染订单主表信息的函数
+        function renderOrderMain(order) {
+            $('#platformOrderNoSpan').text(order.platformOrderNo);
+            $('#shopName').text(getDictLabel('Shop', order.shopId) || order.shopId);
+            $('#platformCode').text(getDictLabel('PlatformCode', order.platformCode) || order.platformCode);
+            $('#orderStatus').text(getDictLabel('OrderStatus', order.orderStatus) || order.orderStatus);
+            $('#orderTime').text(order.orderTime || '-');
+            $('#buyerPayAmount').text(order.buyerPayAmount || '0.00');
+            $('#goodsAmount').text(order.goodsAmount || '0.00');
+            $('#taxAmount').text(order.taxAmount || '0.00');
+            $('#sellerDiscountTotal').text(order.sellerDiscountTotal || '0.00');
+            $('#platformDiscountTotal').text(order.platformDiscountTotal || '0.00');
+            $('#currencyCode').text(order.currencyCode || '-');
+            $('#updatedTime').text(order.updatedTime || '-');
+            $('#trackingNo').text(order.trackingId || '-');
+            $('#shippingProvider').text(order.shippingProvider || '-');
+
+            // 确保字典组件在加载数据后初始化
+            initDictSelects();
+        }
+
+        // 渲染订单明细表格的函数
+        function renderItemTable(data) {
+            table.render({
+                elem: '#itemTable',
+                data: data,
+                page: false, // 详情页通常不分页
+                limit: 999,
+                cols: [
+                    [
+                        {field: 'productName', title: 'Product Name', minWidth: 200},
+                        {field: 'variation', title: 'Variation', width: 170},
+                        {field: 'quantity', title: 'Qty', width: 80},
+                        {field: 'listPrice', title: 'List Price', width: 100},
+                        {field: 'salePrice', title: 'Sale Price', width: 100},
+                        {field: 'lineAmount', title: 'Line Amount', width: 100},
+                        {field: 'sellerDiscountAlloc', title: 'Seller Disc Alloc', width: 130},
+                        {field: 'platformDiscountAlloc', title: 'Platform Disc Alloc', width: 130},
+                        {field: 'taxAmountAlloc', title: 'Tax Alloc', width: 100},
+                    ]
+                ]
+            });
+        }
+    });
+</script>

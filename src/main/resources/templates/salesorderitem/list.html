@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sa="http://www.thymeleaf.org/extras/sa-token"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <!--公共模块-->
+  <div th:replace="~{layout}"></div>
+<body>
+<div class="panel panel-default operation" hidden>
+  <div class="panel-heading title"></div>
+<div class="layui-card-body">
+<form class="layui-form " action="" lay-filter="info">
+  <input name="id" hidden/>
+    <div class="layui-form-item">
+      <label class="layui-form-label">关联销售订单 ID（sales_order.id）</label>
+      <div class="layui-input-block">
+        <input type="orderId" name="orderId" placeholder="请输入关联销售订单 ID（sales_order.id）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">平台，冗余，方便查询</label>
+      <div class="layui-input-block">
+        <input type="platformCode" name="platformCode" placeholder="请输入平台，冗余，方便查询" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">店铺 ID，冗余</label>
+      <div class="layui-input-block">
+        <input type="shopId" name="shopId" placeholder="请输入店铺 ID，冗余" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">平台订单号，冗余</label>
+      <div class="layui-input-block">
+        <input type="platformOrderNo" name="platformOrderNo" placeholder="请输入平台订单号，冗余" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">内部 SKU ID（你系统中的 sku 主键）</label>
+      <div class="layui-input-block">
+        <input type="skuId" name="skuId" placeholder="请输入内部 SKU ID（你系统中的 sku 主键）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">店铺 SKU（seller sku，可选）</label>
+      <div class="layui-input-block">
+        <input type="shopSkuCode" name="shopSkuCode" placeholder="请输入店铺 SKU（seller sku，可选）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">平台 SKU/variation 编码（可选）</label>
+      <div class="layui-input-block">
+        <input type="platformSkuCode" name="platformSkuCode" placeholder="请输入平台 SKU/variation 编码（可选）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">商品名称快照（方便人工看，不参与计算）</label>
+      <div class="layui-input-block">
+        <input type="productName" name="productName" placeholder="请输入商品名称快照（方便人工看，不参与计算）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">成交数量</label>
+      <div class="layui-input-block">
+        <input type="quantity" name="quantity" placeholder="请输入成交数量" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">币种（与订单一致）</label>
+      <div class="layui-input-block">
+        <input type="currencyCode" name="currencyCode" placeholder="请输入币种（与订单一致）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">标价单价（展示用）</label>
+      <div class="layui-input-block">
+        <input type="listPrice" name="listPrice" placeholder="请输入标价单价（展示用）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">成交单价（折扣前或平台导出的成交价）</label>
+      <div class="layui-input-block">
+        <input type="salePrice" name="salePrice" placeholder="请输入成交单价（折扣前或平台导出的成交价）" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">行商品金额 = sale_price * quantity</label>
+      <div class="layui-input-block">
+        <input type="lineAmount" name="lineAmount" placeholder="请输入行商品金额 = sale_price * quantity" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">分摊到本行的商家折扣</label>
+      <div class="layui-input-block">
+        <input type="sellerDiscountAlloc" name="sellerDiscountAlloc" placeholder="请输入分摊到本行的商家折扣" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">分摊到本行的平台折扣/补贴</label>
+      <div class="layui-input-block">
+        <input type="platformDiscountAlloc" name="platformDiscountAlloc" placeholder="请输入分摊到本行的平台折扣/补贴" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">向买家收取运费的行分摊值</label>
+      <div class="layui-input-block">
+        <input type="shippingFeeAlloc" name="shippingFeeAlloc" placeholder="请输入向买家收取运费的行分摊值" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">税费分摊</label>
+      <div class="layui-input-block">
+        <input type="taxAmountAlloc" name="taxAmountAlloc" placeholder="请输入税费分摊" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">创建时间</label>
+      <div class="layui-input-block">
+        <input type="createdTime" name="createdTime" placeholder="请输入创建时间" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+      <div class="layui-form-item">
+      <label class="layui-form-label">更新时间</label>
+      <div class="layui-input-block">
+        <input type="updatedTime" name="updatedTime" placeholder="请输入更新时间" autocomplete="off" class="layui-input disabled">
+      </div>
+    </div>
+  <div class="layui-form-item">
+  <div class="layui-input-block">
+    <button type="submit" class="layui-btn" lay-submit="" lay-filter="submit">保存</button>
+    <button  class="layui-btn layui-btn-primary" id="btn_cancel">返回</button>
+  </div>
+</div>
+</form>
+</div>
+</div>
+
+<div class="table_div">
+  <div id="searchParam"  sa:hasPermission="salesOrderItem:list">
+    <form class="layui-form ">
+      <div class="layui-form-item">
+        <div class="layui-input-inline">
+          <input type="text" name="key" class="layui-input"  autocomplete="off" placeholder="请输入">
+        </div>
+        <div class="layui-input-inline ">
+          <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <table class="layui-table" id="showTable" lay-filter="showTable" ></table>
+</div>
+<script type="text/html" id="toolbar">
+  <div class="layui-btn-container oper">
+    <button class="layui-btn layui-btn-sm" lay-event="add"  sa:hasPermission="salesOrderItem:add">添加</button>
+    <button class="layui-btn layui-btn-sm" lay-event="batchDeleted" sa:hasPermission="salesOrderItem:delete">删除</button>
+  </div>
+</script>
+<script type="text/html" id="tool">
+  <a class="layui-btn layui-btn-xs" lay-event="look">查看</a>
+  <a class="layui-btn layui-btn-xs" lay-event="edit" sa:hasPermission="salesOrderItem:update">编辑</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" sa:hasPermission="salesOrderItem:delete">删除</a>
+</script>
+
+</body>
+</html>
+<script>
+  layui.use(function () {
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+    //加载table
+    var tableIns1 = table.render({
+      elem: '#showTable'
+      , contentType: 'application/json'
+      , page: true //开启分页
+      , url: ctx + 'salesOrderItem/listByPage' //数据接口
+      , method: 'POST'
+      , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+        return {
+          "code": res.code, //解析接口状态
+          "msg": res.msg, //解析提示文本
+          "count": CoreUtil.isEmpty(res.data) ? 0 : res.data.total, //解析数据长度
+          "data": CoreUtil.isEmpty(res.data) ? null : res.data.records //解析数据列表
+        }
+      }
+      , cols: [
+        [
+          {type: 'checkbox', fixed: 'left'},
+          {field: 'id', title: '主键 ID', sort: true},
+          {field: 'orderId', title: '关联销售订单 ID（sales_order.id）', sort: true},
+          {field: 'platformCode', title: '平台，冗余，方便查询', sort: true},
+          {field: 'shopId', title: '店铺 ID，冗余', sort: true},
+          {field: 'platformOrderNo', title: '平台订单号，冗余', sort: true},
+          {field: 'skuId', title: '内部 SKU ID（你系统中的 sku 主键）', sort: true},
+          {field: 'shopSkuCode', title: '店铺 SKU（seller sku，可选）', sort: true},
+          {field: 'platformSkuCode', title: '平台 SKU/variation 编码（可选）', sort: true},
+          {field: 'productName', title: '商品名称快照（方便人工看，不参与计算）', sort: true},
+          {field: 'quantity', title: '成交数量', sort: true},
+          {field: 'currencyCode', title: '币种（与订单一致）', sort: true},
+          {field: 'listPrice', title: '标价单价（展示用）', sort: true},
+          {field: 'salePrice', title: '成交单价（折扣前或平台导出的成交价）', sort: true},
+          {field: 'lineAmount', title: '行商品金额 = sale_price * quantity', sort: true},
+          {field: 'sellerDiscountAlloc', title: '分摊到本行的商家折扣', sort: true},
+          {field: 'platformDiscountAlloc', title: '分摊到本行的平台折扣/补贴', sort: true},
+          {field: 'shippingFeeAlloc', title: '向买家收取运费的行分摊值', sort: true},
+          {field: 'taxAmountAlloc', title: '税费分摊', sort: true},
+          {field: 'createdTime', title: '创建时间', sort: true},
+          {field: 'updatedTime', title: '更新时间', sort: true},
+          {width: 180, toolbar: "#tool", title: '操作'}
+        ]
+      ]
+      , toolbar: '#toolbar'
+    });
+
+
+    //表头工具
+    table.on('toolbar(showTable)', function(obj){
+      switch(obj.event){
+        case 'batchDeleted':
+          var checkStatus = table.checkStatus(obj.config.id);
+          var data = checkStatus.data;
+          if(data.length==0){
+            layer.msg("请选择要批量删除的列");
+          }else {
+            var ids = [];
+            $(data).each(function (index,item) {
+              ids.push(item.id);
+            });
+            tipDialog(ids);
+          }
+          break;
+        case 'add':
+          toUnDisabled();
+          $(".table_div").hide();
+          $(".operation").show();
+          $(".title").html("新增");
+          setTimeout(function () {
+            form.val('info', {
+              "test": "test"
+              , "id": ""
+              , "orderId": ""
+              , "platformCode": ""
+              , "shopId": ""
+              , "platformOrderNo": ""
+              , "skuId": ""
+              , "shopSkuCode": ""
+              , "platformSkuCode": ""
+              , "productName": ""
+              , "quantity": ""
+              , "currencyCode": ""
+              , "listPrice": ""
+              , "salePrice": ""
+              , "lineAmount": ""
+              , "sellerDiscountAlloc": ""
+              , "platformDiscountAlloc": ""
+              , "shippingFeeAlloc": ""
+              , "taxAmountAlloc": ""
+              , "createdTime": ""
+              , "updatedTime": ""
+            });
+          }, 200);
+          break;
+      };
+    });
+    //列操作
+    table.on('tool(showTable)',function (obj) {
+      var data = obj.data;
+      switch (obj.event) {
+        case 'del':
+          var ids=[];
+          ids.push(data.id);
+          tipDialog(ids);
+          break;
+        case 'look':
+          backshow(data);
+          toDisabled();
+          break;
+        case 'edit':
+          backshow(data);
+          $(".title").html("编辑");
+          toUnDisabled();
+          break;
+      }
+    });
+
+    //删除
+    var tipDialog=function (ids) {
+      layer.open({
+        content: "确定要删除么?",
+        yes: function(index, layero){
+          layer.close(index); //如果设定了yes回调，需进行手工关闭
+          CoreUtil.sendDelete(ctx + "salesOrderItem/delete",ids,function (res) {
+            layer.msg(res.msg, {time:1000},function () {
+              tableIns1.reload();
+            });
+          });
+        }
+      });
+    };
+
+    //返回
+    $("#btn_cancel").click(function() {
+      $(".table_div").show();
+      $(".operation").hide();
+      tableIns1.reload();
+      return false;
+    });
+
+    //监听保存
+    form.on('submit(submit)', function(data){
+      if(data.field.id===undefined || data.field.id===null || data.field.id===""){
+        CoreUtil.sendPost(ctx + "salesOrderItem/add",data.field,function (res) {
+          $(".table_div").show();
+          $(".operation").hide();
+          tableIns1.reload();
+        });
+      }else {
+        CoreUtil.sendPut(ctx + "salesOrderItem/update",data.field,function (res) {
+          $(".table_div").show();
+          $(".operation").hide();
+          tableIns1.reload();
+        });
+      }
+
+      return false;
+    });
+
+    // 监听搜索操作
+    form.on('submit(data-search-btn)', function (data) {
+      //执行搜索重载
+      tableIns1.reload({
+        page: {
+          curr: 1
+        }
+        , where: data.field
+      });
+      return false;
+    });
+
+    //回显
+    var backshow = function (data) {
+      $(".table_div").hide();
+      $(".operation").show();
+      $(".title").html("查看");
+      setTimeout(function () {
+        form.val('info', {
+          "test": "test"
+                      , "id": data.id
+                      , "orderId": data.orderId
+                      , "platformCode": data.platformCode
+                      , "shopId": data.shopId
+                      , "platformOrderNo": data.platformOrderNo
+                      , "skuId": data.skuId
+                      , "shopSkuCode": data.shopSkuCode
+                      , "platformSkuCode": data.platformSkuCode
+                      , "productName": data.productName
+                      , "quantity": data.quantity
+                      , "currencyCode": data.currencyCode
+                      , "listPrice": data.listPrice
+                      , "salePrice": data.salePrice
+                      , "lineAmount": data.lineAmount
+                      , "sellerDiscountAlloc": data.sellerDiscountAlloc
+                      , "platformDiscountAlloc": data.platformDiscountAlloc
+                      , "shippingFeeAlloc": data.shippingFeeAlloc
+                      , "taxAmountAlloc": data.taxAmountAlloc
+                      , "createdTime": data.createdTime
+                      , "updatedTime": data.updatedTime
+                  });
+      }, 200);
+    }
+
+    //禁用输入
+    var toDisabled = function () {
+      $(".oper").hide();
+      $(".disabled").each(function (index, elem) {
+        $(elem).attr("disabled", "")
+      })
+    }
+
+    //放开输入
+    var toUnDisabled = function () {
+      $(".oper").show();
+      $(".disabled").each(function (index, elem) {
+        $(elem).removeAttr("disabled", "")
+      })
+    }
+  });
+</script>

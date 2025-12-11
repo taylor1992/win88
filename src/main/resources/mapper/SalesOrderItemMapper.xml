@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.project.mapper.SalesOrderItemMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.company.project.entity.SalesOrderItemEntity" id="salesOrderItemMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="platformCode" column="platform_code"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="platformOrderNo" column="platform_order_no"/>
+        <result property="skuId" column="sku_id"/>
+        <result property="shopSkuCode" column="shop_sku_code"/>
+        <result property="platformSkuCode" column="platform_sku_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="currencyCode" column="currency_code"/>
+        <result property="listPrice" column="list_price"/>
+        <result property="salePrice" column="sale_price"/>
+        <result property="lineAmount" column="line_amount"/>
+        <result property="sellerDiscountAlloc" column="seller_discount_alloc"/>
+        <result property="platformDiscountAlloc" column="platform_discount_alloc"/>
+        <result property="shippingFeeAlloc" column="shipping_fee_alloc"/>
+        <result property="taxAmountAlloc" column="tax_amount_alloc"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+    </resultMap>
+
+
+</mapper>
