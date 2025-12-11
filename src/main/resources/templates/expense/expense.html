@@ -183,10 +183,10 @@
         var dictTypes = ['ExpenseStatus','ExpenseCategory'];
 
         loadDicts(dictTypes, function () {
-            renderDictSelect('ExpenseStatus', $('#sStatus'), 'Select All');
-            renderDictSelect('ExpenseStatus', $('#status_form'), 'Select All');
-            renderDictSelect('ExpenseCategory', $('#sCategory'), 'Select All');
-            renderDictSelect('ExpenseCategory', $('#category_form'), 'Select All');
+            renderDictSelect('ExpenseStatus', $('#sStatus'), 'All Status');
+            renderDictSelect('ExpenseStatus', $('#status_form'), 'Select one');
+            renderDictSelect('ExpenseCategory', $('#sCategory'), 'All Category');
+            renderDictSelect('ExpenseCategory', $('#category_form'), 'Select one');
         })
 
         // ======== 日期控件：查询条件 ========
